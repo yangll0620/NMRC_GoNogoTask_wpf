@@ -219,14 +219,14 @@
                         Click="Btn_stop_Click"/>
 
 
-                <Button x:Name="btn_Pause" IsEnabled="False"
+                <Button x:Name="btn_Pause" IsEnabled="False" Visibility="Hidden"
                         Content="Pause" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
                         Margin="0,0,350,15"  Width="100" Height="35" 
                         FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14"
                         />
 
 
-                <Button x:Name="btn_Test" Content="Test" 
+                <Button x:Name="btn_Test" Content="Test" IsEnabled="False" Visibility="Hidden"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,500,15"  
                         Width="100" Height="35" FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14" 
                         Click="btnTest_Click" />

@@ -497,7 +497,6 @@ namespace GonoGoTask_wpfVer
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            saveInputParameters();
         }
 
 

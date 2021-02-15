@@ -457,7 +457,7 @@ namespace GonoGoTask_wpfVer
                         file.WriteLine(String.Format("{0, -40}: {1}", "Cue Start TimePoint", (timePoint_Interface_CueOnset / ms2sRatio).ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "Cue Interface Time", t_Cue.ToString()));
 
-                        // Cue Interface Timepoint, Target type: Go, and Target position index: 0 (1, 2)
+                        // Target Interface Timepoint, Target type: Go, and Target position index: 0 (1, 2)
                         file.WriteLine(String.Format("{0, -40}: {1}", "Target Start TimePoint", (timePoint_Interface_TargetOnset / ms2sRatio).ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "TargetType", targetType.ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "TargetPositionIndex", targetPosInd.ToString()));
@@ -473,7 +473,7 @@ namespace GonoGoTask_wpfVer
                         file.WriteLine(String.Format("{0, -40}: {1}", "Cue Start TimePoint", (timePoint_Interface_CueOnset / ms2sRatio).ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "Cue Interface Time", t_Cue.ToString()));
 
-                        // Cue Interface Timepoint, Target type: Go, and Target position index: 0 (1, 2)
+                        // Target Interface Timepoint, Target type: Go, and Target position index: 0 (1, 2)
                         file.WriteLine(String.Format("{0, -40}: {1}", "Target Start TimePoint", (timePoint_Interface_TargetOnset / ms2sRatio).ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "TargetType", targetType.ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "TargetPositionIndex", targetPosInd.ToString()));
@@ -491,7 +491,7 @@ namespace GonoGoTask_wpfVer
                         file.WriteLine(String.Format("{0, -40}: {1}", "Cue Start TimePoint", (timePoint_Interface_CueOnset / ms2sRatio).ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "Cue Interface Time", t_Cue.ToString()));
 
-                        // Cue Interface Timepoint, Target type: Go, and Target position index: 0 (1, 2)
+                        // Target Interface Timepoint, Target type: Go, and Target position index: 0 (1, 2)
                         file.WriteLine(String.Format("{0, -40}: {1}", "Target Start TimePoint", (timePoint_Interface_TargetOnset / ms2sRatio).ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "TargetType", targetType.ToString()));
                         file.WriteLine(String.Format("{0, -40}: {1}", "TargetPositionIndex", targetPosInd.ToString()));
