@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GonoGoTask_wpfVer"
         mc:Ignorable="d"
-        Title="GonoGoTask" Height="600" Width="850"
+        Title="GonoGoTask" Height="800" Width="850"
         Closing="Window_Closing" Icon="GonoGo2.ico">
 
     <Canvas x:Name="canvas1"
@@ -15,7 +15,7 @@
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File" FontSize="14">
                     <MenuItem Header="_Load Config. File" Click="btnLoadConf_Click"/>
-                    <MenuItem Header="_Save Current Config." IsEnabled="False"/>
+                    <MenuItem Header="_Save Current Config." Click="MenuItem_SaveConf_Click"/>
                     <Separator />
                     <MenuItem Header="_Exit" />
                 </MenuItem>
@@ -35,20 +35,18 @@
         </DockPanel>
 
 
-        <Grid Margin="0, 20, 0, 0" Height="550"  Width="800">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid Margin="0, 20, 0, 0" Height="750"  Width="800">
+
             <!--Grid RowDefinitions: 0, 1, 2-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>
+                <RowDefinition Height="4*"/>
                 <RowDefinition Height="8*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
 
-            <!--Row0: Required Inputs GroupBox-->
+            <!--Required Inputs GroupBox-->
             <GroupBox Header="Required Inputs" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0"
                   Margin="5,15,0,0"  
                   FontFamily="Microsoft Sans Serif" FontWeight="Bold" Grid.ColumnSpan="2">
@@ -114,7 +112,78 @@
                 </Grid>
             </GroupBox>
 
-            <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <!--Realtime Feedback-->
+            <GroupBox Header="Save Folder and Audios Parameters" Grid.Row="1" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="5,15,0,0" FontFamily="Microsoft Sans Serif" FontWeight="Bold">
+                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="150"  Width="780" Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Label Content="Saved Folder" 
+                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
+                                   Height="25" Margin="0,0,0,0" FontWeight="Normal" />
+
+                        <TextBox x:Name="textBox_savedFolder" IsEnabled="False"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top"
+                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                 Width="600" Height="40" Margin="110,0,0,0"
+                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
+
+                        <Button x:Name="btn_SelectSavefolder" 
+                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,0,0,0"  Width="60" Height="25" 
+                                    FontFamily="Microsoft Sans Serif" 
+                                    Click="Btn_SelectSavefolder_Click" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="66*"/>
+                            <ColumnDefinition Width="49*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Corrent Audio File" 
+                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
+                                   Height="26" Margin="0,12" FontWeight="Normal" />
+
+                        <TextBox x:Name="textBox_audioFile_Correct" IsEnabled="False"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top"
+                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                 Width="600" Height="40" Margin="110,0,0,0"
+                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
+
+                        <Button x:Name="btn_Select_AudioFile_Correct" 
+                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,12"  Width="60" Height="26" 
+                                    FontFamily="Microsoft Sans Serif" 
+                                    Click="Btn_Select_AudioFile_Correct_Click" Grid.Column="1" />
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Label Content="Error Audio File" 
+                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
+                                   Height="25" Margin="0,0,0,0" FontWeight="Normal"  />
+
+                        <TextBox x:Name="textBox_audioFile_Error" IsEnabled="False"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top"
+                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                 Width="600" Height="40" Margin="110,0,0,0"
+                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
+
+                        <Button x:Name="btn_Select_AudioFile_Error" 
+                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,0,0,0"  Width="60" Height="25" 
+                                    FontFamily="Microsoft Sans Serif" 
+                                    Click="Btn_Select_AudioFile_Error_Click" />
+                    </Grid>
+
+                </Grid>
+            </GroupBox>
+
+            <!--Realtime Feedback-->
+            <Grid Grid.Row="2">
                 <GroupBox Header="Realtime Feedback" HorizontalAlignment="Left" VerticalAlignment="Top"
                           Margin="5,15,0,0" FontFamily="Microsoft Sans Serif" FontWeight="Bold">
                     <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="350"  Width="780" Margin="0,10,0,0">
@@ -205,7 +274,8 @@
             </Grid>
 
 
-            <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <!--Function Buttons-->
+            <Grid Grid.Row="3">
                 <Button x:Name="btn_start" 
                         Content="Start" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                         Margin="0,0,200,15"  Width="100" Height="35" IsEnabled="False"
@@ -218,18 +288,16 @@
                         FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14"
                         Click="Btn_stop_Click"/>
 
-
-                <Button x:Name="btn_Pause" IsEnabled="False" Visibility="Hidden"
-                        Content="Pause" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
-                        Margin="0,0,350,15"  Width="100" Height="35" 
-                        FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14"
-                        />
-
-
-                <Button x:Name="btn_Test" Content="Test" IsEnabled="False" Visibility="Hidden"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,500,15"  
-                        Width="100" Height="35" FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14" 
-                        Click="btnTest_Click" />
+                <Button x:Name="btn_pause" 
+                    Content="Pause" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    Margin="200,0,0,15"  Width="100" Height="35" IsEnabled="False"
+                    FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14" 
+                    Click="btnPause_Click" />
+                <Button x:Name="btn_resume" 
+                    Content="Resume" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    Margin="20,0,0,15"  Width="100" Height="35" IsEnabled="False"
+                    FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14" 
+                    Click="btnResume_Click" />
 
 
             </Grid>

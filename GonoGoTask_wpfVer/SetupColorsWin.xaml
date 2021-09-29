@@ -213,11 +213,11 @@
                     FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14" 
                     Click="Btn_OK_Click" />
 
-            <Button x:Name="btn_Cancle"
-                    Content="Cancle" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+            <Button x:Name="btn_Cancel"
+                    Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
                     Margin="0,0,10,10"  Width="60" Height="30" 
                     FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="14" 
-                    Click="Btn_Cancle_Click" />
+                    Click="Btn_Cancel_Click" />
         </Grid>
         
 

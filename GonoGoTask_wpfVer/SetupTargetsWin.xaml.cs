@@ -25,15 +25,15 @@ namespace GonoGoTask_wpfVer
         private void LoadInitTargetData()
         {
             textBox_closeMargin.Text = parent.closeMarginPercentage.ToString();
-            textBox_targetDiameter.Text = parent.targetDiameterInch.ToString();
+            textBox_targetDiameter.Text = parent.targetDiaInch.ToString();
             textBox_targetDisfromCenter.Text = parent.targetDisFromCenterInch.ToString();
         }
 
         private void SaveTargetData()
         {/* ---- Save all the Set Target Information back to MainWindow Variables ----- */
 
-            parent.closeMarginPercentage = float.Parse(textBox_closeMargin.Text);
-            parent.targetDiameterInch = float.Parse(textBox_targetDiameter.Text);
+            parent.closeMarginPercentage = int.Parse(textBox_closeMargin.Text);
+            parent.targetDiaInch = float.Parse(textBox_targetDiameter.Text);
             parent.targetDisFromCenterInch = float.Parse(textBox_targetDisfromCenter.Text);
         }
 
@@ -63,7 +63,7 @@ namespace GonoGoTask_wpfVer
             ResumeBtnStartStop();
         }
 
-        private void Btn_Cancle_Click(object sender, RoutedEventArgs e)
+        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
             ResumeBtnStartStop();
             this.Close();

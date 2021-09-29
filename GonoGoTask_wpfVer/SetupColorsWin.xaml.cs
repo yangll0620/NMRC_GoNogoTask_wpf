@@ -51,9 +51,9 @@ namespace GonoGoTask_wpfVer
 
 
             // Set Default Selected Item
-            cbo_goColor.SelectedItem = typeof(Colors).GetProperty(parent.goColorStr);
-            cbo_nogoColor.SelectedItem = typeof(Colors).GetProperty(parent.nogoColorStr);
-            cbo_cueColor.SelectedItem = typeof(Colors).GetProperty(parent.cueColorStr);
+            cbo_goColor.SelectedItem = typeof(Colors).GetProperty(parent.goFillColorStr);
+            cbo_nogoColor.SelectedItem = typeof(Colors).GetProperty(parent.nogoFillColorStr);
+            cbo_cueColor.SelectedItem = typeof(Colors).GetProperty(parent.cueCrossingColorStr);
             cbo_BKWaitTrialColor.SelectedItem = typeof(Colors).GetProperty(parent.BKWaitTrialColorStr);
             cbo_BKTrialColor.SelectedItem = typeof(Colors).GetProperty(parent.BKTrialColorStr);
             cbo_CorrFillColor.SelectedItem = typeof(Colors).GetProperty(parent.CorrFillColorStr);
@@ -65,9 +65,9 @@ namespace GonoGoTask_wpfVer
         private void SaveColorsData()
         { /* ---- Save all the Select Colors Information back to MainWindow Color Strings ----- */
 
-            parent.goColorStr = (cbo_goColor.SelectedItem as PropertyInfo).Name;
-            parent.nogoColorStr = (cbo_nogoColor.SelectedItem as PropertyInfo).Name;
-            parent.cueColorStr = (cbo_cueColor.SelectedItem as PropertyInfo).Name;
+            parent.goFillColorStr = (cbo_goColor.SelectedItem as PropertyInfo).Name;
+            parent.nogoFillColorStr = (cbo_nogoColor.SelectedItem as PropertyInfo).Name;
+            parent.cueCrossingColorStr = (cbo_cueColor.SelectedItem as PropertyInfo).Name;
             parent.BKWaitTrialColorStr = (cbo_BKWaitTrialColor.SelectedItem as PropertyInfo).Name;
             parent.BKTrialColorStr = (cbo_BKTrialColor.SelectedItem as PropertyInfo).Name;
             parent.CorrFillColorStr = (cbo_CorrFillColor.SelectedItem as PropertyInfo).Name;
@@ -88,7 +88,7 @@ namespace GonoGoTask_wpfVer
             ResumeBtnStartStop();
         }
 
-        private void Btn_Cancle_Click(object sender, RoutedEventArgs e)
+        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
             ResumeBtnStartStop();
             this.Close();

@@ -162,7 +162,7 @@ namespace GonoGoTask_wpfVer
         // Wait Time Range for Each Event, and Max Reaction and Reach Time
         float[] tRange_ReadyTime, tRange_CueTime, tRange_NogoShowTime;
         float tMax_ReactionTimeMS, tMax_ReachTimeMS; 
-        Int32 t_VisfeedbackShow; // Visual Feedback Show Time (ms)
+        Int32 t_VisfeedbackShow, t_InterTrial; // Visual Feedback Show Time (ms)
 
         bool PresentTrial;
 
@@ -764,34 +764,36 @@ namespace GonoGoTask_wpfVer
         {/* get the setup from the parent interface */
 
             // object size and distance parameters
-            objdiameter = Utility.in2pixal(parent.targetDiameterInch);
+            objdiameter = Utility.in2pixal(parent.targetDiaInch);
             disFromCenter = Utility.in2pixal(parent.targetDisFromCenterInch);
             closediameter = (int)(objdiameter * (1 + parent.closeMarginPercentage / 100));
 
             // interfaces time related parameters
-            tRange_ReadyTime = parent.tRange_ReadyTime;
-            tRange_CueTime = parent.tRange_CueTime;
-            tRange_NogoShowTime = parent.tRange_NogoShowTime;
+            tRange_ReadyTime = parent.tRange_ReadyTimeS;
+            tRange_CueTime = parent.tRange_CueTimeS;
+            tRange_NogoShowTime = parent.tRange_NogoShowTimeS;
             tMax_ReactionTimeMS = parent.tMax_ReactionTimeS * 1000;
             tMax_ReachTimeMS = parent.tMax_ReachTimeS * 1000;
-            t_VisfeedbackShow = (Int32)(parent.t_VisfeedbackShow * 1000);
+            t_InterTrial = (Int32)(parent.t_InterTrialS * 1000);
+            t_VisfeedbackShow = (Int32)(parent.t_VisfeedbackShowS * 1000);
+            
 
             // Juicer Time
-            t_JuicerFullGiven = (Int32)(parent.t_JuicerFullGivenS * 1000);
+            t_JuicerFullGiven = (Int32)(parent.t_JuicerCorrectGivenS * 1000);
             t_JuicerCloseGiven = (Int32)(parent.t_JuicerCloseGivenS * 1000);
 
             /* ---- Get all the Set Colors ----- */
             Color selectedColor;
             // goCircle Color
-            selectedColor = (Color)(typeof(Colors).GetProperty(parent.goColorStr) as PropertyInfo).GetValue(null, null);
+            selectedColor = (Color)(typeof(Colors).GetProperty(parent.goFillColorStr) as PropertyInfo).GetValue(null, null);
             brush_goCircle = new SolidColorBrush(selectedColor);
 
             // nogoRect Color
-            selectedColor = (Color)(typeof(Colors).GetProperty(parent.nogoColorStr) as PropertyInfo).GetValue(null, null);
+            selectedColor = (Color)(typeof(Colors).GetProperty(parent.nogoFillColorStr) as PropertyInfo).GetValue(null, null);
             brush_nogoRect = new SolidColorBrush(selectedColor);
 
             // Cue Crossing Color
-            selectedColor = (Color)(typeof(Colors).GetProperty(parent.cueColorStr) as PropertyInfo).GetValue(null, null);
+            selectedColor = (Color)(typeof(Colors).GetProperty(parent.cueCrossingColorStr) as PropertyInfo).GetValue(null, null);
             brush_CueCrossing = new SolidColorBrush(selectedColor);
 
 
@@ -1163,7 +1165,6 @@ namespace GonoGoTask_wpfVer
             Remove_TwoWhitePoints();
             Remove_GoCircle();
             Remove_NogoRect();
-
         }
 
 

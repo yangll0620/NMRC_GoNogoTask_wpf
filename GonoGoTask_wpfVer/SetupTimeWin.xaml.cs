@@ -38,41 +38,43 @@ namespace GonoGoTask_wpfVer
         private void LoadInitTimeData()
         {// Load Initial Time Data from MainWindow
 
-            textBox_tReady_min.Text = parent.tRange_ReadyTime[0].ToString();
-            textBox_tReady_max.Text = parent.tRange_ReadyTime[1].ToString();
+            textBox_tReady_min.Text = parent.tRange_ReadyTimeS[0].ToString();
+            textBox_tReady_max.Text = parent.tRange_ReadyTimeS[1].ToString();
 
-            textBox_tCue_min.Text = parent.tRange_CueTime[0].ToString();
-            textBox_tCue_max.Text = parent.tRange_CueTime[1].ToString();
+            textBox_tCue_min.Text = parent.tRange_CueTimeS[0].ToString();
+            textBox_tCue_max.Text = parent.tRange_CueTimeS[1].ToString();
 
-            textBox_tNogoShow_min.Text = parent.tRange_NogoShowTime[0].ToString();
-            textBox_tNogoShow_max.Text = parent.tRange_NogoShowTime[1].ToString();
+            textBox_tNogoShow_min.Text = parent.tRange_NogoShowTimeS[0].ToString();
+            textBox_tNogoShow_max.Text = parent.tRange_NogoShowTimeS[1].ToString();
 
 
             textBox_MaxReachTime.Text = parent.tMax_ReachTimeS.ToString();
             textBox_MaxReactionTime.Text = parent.tMax_ReactionTimeS.ToString();
 
-            textBox_tVisFeedback.Text = parent.t_VisfeedbackShow.ToString(); 
+            textBox_tInterTrial.Text = parent.t_InterTrialS.ToString();
+            textBox_tVisFeedback.Text = parent.t_VisfeedbackShowS.ToString(); 
         }
 
         private void SaveTimeData()
         {/* ---- Save all the Set Time Information back to MainWindow Variables ----- */
-            parent.tRange_ReadyTime[0] = float.Parse(textBox_tReady_min.Text);
-            parent.tRange_ReadyTime[1] = float.Parse(textBox_tReady_max.Text);
+            parent.tRange_ReadyTimeS[0] = float.Parse(textBox_tReady_min.Text);
+            parent.tRange_ReadyTimeS[1] = float.Parse(textBox_tReady_max.Text);
 
-            parent.tRange_CueTime[0] = float.Parse(textBox_tCue_min.Text);
-            parent.tRange_CueTime[1] = float.Parse(textBox_tCue_max.Text);
+            parent.tRange_CueTimeS[0] = float.Parse(textBox_tCue_min.Text);
+            parent.tRange_CueTimeS[1] = float.Parse(textBox_tCue_max.Text);
 
-            parent.tRange_NogoShowTime[0] = float.Parse(textBox_tNogoShow_min.Text);
-            parent.tRange_NogoShowTime[1] = float.Parse(textBox_tNogoShow_max.Text);
+            parent.tRange_NogoShowTimeS[0] = float.Parse(textBox_tNogoShow_min.Text);
+            parent.tRange_NogoShowTimeS[1] = float.Parse(textBox_tNogoShow_max.Text);
 
 
             parent.tMax_ReachTimeS = float.Parse(textBox_MaxReachTime.Text);
             parent.tMax_ReactionTimeS = float.Parse(textBox_MaxReactionTime.Text);
 
-            parent.t_VisfeedbackShow = float.Parse(textBox_tVisFeedback.Text);
+            parent.t_InterTrialS = float.Parse(textBox_tInterTrial.Text);
+            parent.t_VisfeedbackShowS = float.Parse(textBox_tVisFeedback.Text);
         }
 
-        private void Btn_Cancle_Click(object sender, RoutedEventArgs e)
+        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
             ResumeBtnStartStop();
             this.Close();

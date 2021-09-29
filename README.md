@@ -9,7 +9,7 @@ This is a C# Wpf version of the presentation program in the touch screen of the 
 
 Issues:
 
-1. Has not added Norect.
-2. Add a subfunction to Show all the Optional Targets
-3. t_nogoshow set to be a range
-4. Add Voice Feedback
+1. Stop Bug.
+2. Load and Save config. Functions
+3. Load function from file
+4. Change event code according to COT task

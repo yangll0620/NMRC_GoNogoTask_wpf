@@ -31,17 +31,19 @@ namespace GonoGoTask_wpfVer
         presentation taskPresentWin;
 
         // Strings stoing the Colors
-        public string goColorStr, nogoColorStr, cueColorStr;
-        public string BKWaitTrialColorStr, BKTrialColorStr;
+        public string goFillColorStr, nogoFillColorStr, cueCrossingColorStr;
+        public string BKWaitTrialColorStr, BKTrialColorStr, BKCueShownColorStr, BKTargetShownColorStr;
         public string CorrFillColorStr, CorrOutlineColorStr, ErrorFillColorStr, ErrorOutlineColorStr;
 
+
         // Time Related Variables
-        public float[] tRange_ReadyTime, tRange_CueTime, tRange_NogoShowTime;
-        public float tMax_ReactionTimeS, tMax_ReachTimeS, t_VisfeedbackShow;
-        public float t_JuicerFullGivenS, t_JuicerCloseGivenS;
+        public float[] tRange_ReadyTimeS, tRange_CueTimeS, tRange_NogoShowTimeS;
+        public float tMax_ReactionTimeS, tMax_ReachTimeS, t_VisfeedbackShowS, t_InterTrialS;
+        public float t_JuicerCorrectGivenS, t_JuicerCloseGivenS;
 
         // Target Related Variables
-        public float targetDiameterInch, targetDisFromCenterInch, closeMarginPercentage;
+        public float targetDiaInch, targetDisFromCenterInch;
+        public int closeMarginPercentage;
 
 
         // Touch Screen Rectangle
@@ -142,6 +144,31 @@ namespace GonoGoTask_wpfVer
             }
         }
 
+        private void Btn_Select_AudioFile_Correct_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Btn_Select_AudioFile_Error_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Btn_SelectSavefolder_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnResume_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnPause_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void btnTestTouchpadJuicer_Click(object sender, RoutedEventArgs e)
         {
             TestStartpadJuicerWin Win_TestStartpadJuicer = new TestStartpadJuicerWin(this);
@@ -157,6 +184,26 @@ namespace GonoGoTask_wpfVer
             Win_TestStartpadJuicer.Left = Rect_showMainScreen.Left;
 
             Win_TestStartpadJuicer.Show();
+        }
+
+        private void MenuItem_SaveConf_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog saveFileDlg = new Microsoft.Win32.SaveFileDialog
+            {
+
+                // Set filter for file extension and default file extension 
+                DefaultExt = ".json",
+                Filter = "Json Files|*.json",
+                FileName = "config"
+            };
+
+            Nullable<bool> result = saveFileDlg.ShowDialog();
+            if (result == true)
+            {
+                // Open document 
+                string saveConfigFile = saveFileDlg.FileName;
+                SaveConfigFile(saveConfigFile);
+            }
         }
 
         private void saveInputParameters()
@@ -186,17 +233,18 @@ namespace GonoGoTask_wpfVer
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Total Number of Go Trials", textBox_goTrialNum.Text));
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Total Number of Nogo Trials", textBox_nogoTrialNum.Text));
 
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Go Target Color", goColorStr));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Nogo Target Color", nogoColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Go Target Color", goFillColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Nogo Target Color", nogoFillColorStr));
 
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Target Diameter (inch)", targetDiameterInch.ToString()));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Target Diameter (inch)", targetDiaInch.ToString()));
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Target Distance from the Center (inch)", targetDisFromCenterInch.ToString()));
 
 
-                file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Ready Interface Show Time Range (s)", tRange_ReadyTime[0].ToString(), tRange_ReadyTime[1].ToString()));
-                file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Cue Interface Show Time Range (s)", tRange_CueTime[0].ToString(), tRange_CueTime[1].ToString()));
-                file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Nogo Interface Show Range Time (s)", tRange_NogoShowTime[0].ToString(), tRange_NogoShowTime[1].ToString()));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Visual Feedback Time (s)", t_VisfeedbackShow.ToString()));
+                file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Ready Interface Show Time Range (s)", tRange_ReadyTimeS[0].ToString(), tRange_ReadyTimeS[1].ToString()));
+                file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Cue Interface Show Time Range (s)", tRange_CueTimeS[0].ToString(), tRange_CueTimeS[1].ToString()));
+                file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Nogo Interface Show Range Time (s)", tRange_NogoShowTimeS[0].ToString(), tRange_NogoShowTimeS[1].ToString()));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Inter-Trial Time (s)", t_InterTrialS.ToString()));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Visual Feedback Time (s)", t_VisfeedbackShowS.ToString())); 
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Juicer Feedback Time (s)", t_JuicerCloseGivenS.ToString()));
 
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Max Reach Time (s)", tMax_ReachTimeS.ToString()));
@@ -295,7 +343,7 @@ namespace GonoGoTask_wpfVer
             wholeGrid.UpdateLayout();
 
 
-            int Diameter = Utility.in2pixal(targetDiameterInch);
+            int Diameter = Utility.in2pixal(targetDiaInch);
             List<int[]> optPostions_List = new List<int[]>();
 
             int screenCenter_X = (int)wholeGrid.ActualWidth / 2;
@@ -308,7 +356,7 @@ namespace GonoGoTask_wpfVer
             optPostions_List.Add(new int[] { screenCenter_X, screenCenter_Y - disYFromCenter }); // top position
             optPostions_List.Add(new int[] { screenCenter_X + disXFromCenter, screenCenter_Y }); // right position
 
-            Color goCircleColor = (Color)(typeof(Colors).GetProperty(goColorStr) as PropertyInfo).GetValue(null, null); ;
+            Color goCircleColor = (Color)(typeof(Colors).GetProperty(goFillColorStr) as PropertyInfo).GetValue(null, null); ;
             foreach (int[] centerPoint_Pos in optPostions_List)
             {
                 Ellipse circleGo = Create_GoCircle((double)Diameter, centerPoint_Pos);
@@ -384,24 +432,25 @@ namespace GonoGoTask_wpfVer
 
             // Juicer Given Time
             var configJuicer = config["JuicerGivenTime"];
-            t_JuicerFullGivenS = float.Parse((string)configJuicer["Correct"]);
+            t_JuicerCorrectGivenS = float.Parse((string)configJuicer["Correct"]);
             t_JuicerCloseGivenS = float.Parse((string)configJuicer["Close"]);
 
 
             // Times Sections
             var configTime = config["Times"];
-            tRange_ReadyTime = new float[] {float.Parse((string)configTime["Ready Show Time Range"][0]), float.Parse((string)configTime["Ready Show Time Range"][1])};
-            tRange_CueTime = new float[] {float.Parse((string)configTime["Cue Show Time Range"][0]), float.Parse((string)configTime["Cue Show Time Range"][1])};
-            tRange_NogoShowTime = new float[] { float.Parse((string)configTime["Nogo Show Range Time"][0]), float.Parse((string)configTime["Nogo Show Range Time"][1]) };
-            tMax_ReactionTimeS = float.Parse((string)configTime["Max Reach Time"]);
-            tMax_ReachTimeS = float.Parse((string)configTime["Max Reaction Time"]);
-            t_VisfeedbackShow = float.Parse((string)configTime["Visual Feedback Show Time"]);
-
+            tRange_ReadyTimeS = new float[] {float.Parse((string)configTime["Ready Show Time Range"][0]), float.Parse((string)configTime["Ready Show Time Range"][1])};
+            tRange_CueTimeS = new float[] {float.Parse((string)configTime["Cue Show Time Range"][0]), float.Parse((string)configTime["Cue Show Time Range"][1])};
+            tRange_NogoShowTimeS = new float[] { float.Parse((string)configTime["Nogo Show Range Time"][0]), float.Parse((string)configTime["Nogo Show Range Time"][1]) };
+            tMax_ReactionTimeS = float.Parse((string)configTime["Max Reaction Time"]);
+            tMax_ReachTimeS = float.Parse((string)configTime["Max Reach Time"]);
+            t_InterTrialS = float.Parse((string)configTime["Inter Trials Time"]);
+            t_VisfeedbackShowS = float.Parse((string)configTime["Visual Feedback Show Time"]);
+            
             // Color Sections
             var configColors = config["Colors"];
-            goColorStr = configColors["Go Fill Color"];
-            nogoColorStr = configColors["noGo Fill Color"];
-            cueColorStr = configColors["Cue Crossing Color"];
+            goFillColorStr = configColors["Go Fill Color"];
+            nogoFillColorStr = configColors["noGo Fill Color"];
+            cueCrossingColorStr = configColors["Cue Crossing Color"];
             BKWaitTrialColorStr = configColors["Wait Trial Start Background"];
             BKTrialColorStr = configColors["Trial Background"];
             CorrFillColorStr = configColors["Correct Fill"];
@@ -412,9 +461,9 @@ namespace GonoGoTask_wpfVer
 
             // Target Sections
             var configTarget = config["Target"];      
-            targetDiameterInch = float.Parse((string)configTarget["Target Diameter"]);
+            targetDiaInch = float.Parse((string)configTarget["Target Diameter"]);
             targetDisFromCenterInch = float.Parse((string)configTarget["Target Distance from Center"]);
-            closeMarginPercentage = float.Parse((string)configTarget["Close Margin Percentage"]);
+            closeMarginPercentage = int.Parse((string)configTarget["Close Margin Percentage"]);
 
 
             audioFile_Correct = config["audioFile_Correct"];
@@ -426,6 +475,60 @@ namespace GonoGoTask_wpfVer
             }
         }
 
+        private void SaveConfigFile(string configFile)
+        {/*Load Config File .json 
+            configFile == '': load the default Config File
+            */
+
+            // config Times
+            ConfigTimes configTimes = new ConfigTimes();
+            configTimes.tRange_ReadyTime = tRange_ReadyTimeS;
+            configTimes.tMax_ReactionTime = tMax_ReactionTimeS;
+            configTimes.tMax_ReachTime = tMax_ReachTimeS;
+            configTimes.t_InterTrial = t_InterTrialS;
+            configTimes.t_VisfeedbackShow = t_VisfeedbackShowS;
+            configTimes.t_JuicerCorrectGiven = t_JuicerCorrectGivenS;
+            configTimes.t_JuicerCloseGiven = t_JuicerCloseGivenS;
+
+
+            // config Target
+            ConfigTarget configTarget = new ConfigTarget();
+            configTarget.targetDiaInch = targetDiaInch;
+            configTarget.targetDisFromCenter = targetDisFromCenterInch;
+            configTarget.closeMarginPercentage = closeMarginPercentage;
+
+
+            // config Colors
+            ConfigColors configColors = new ConfigColors();
+            configColors.goFillColorStr = goFillColorStr;
+            configColors.nogoFillColorStr = nogoFillColorStr;
+            configColors.cueCrossingColorStr = cueCrossingColorStr;
+            configColors.BKWaitTrialColorStr = BKWaitTrialColorStr;
+            configColors.BKTrialColorStr = BKTrialColorStr;
+            configColors.CorrFillColorStr = CorrFillColorStr;
+            configColors.CorrOutlineColorStr = CorrOutlineColorStr;
+            configColors.ErrorFillColorStr = ErrorFillColorStr;
+            configColors.ErrorOutlineColorStr = ErrorOutlineColorStr;
+
+
+
+            // Combine all configs
+            Config_GoNogoTask config = new Config_GoNogoTask();
+            config.NHPName = textBox_NHPName.Text;
+            config.GoTrialNum = Int32.Parse(textBox_goTrialNum.Text);
+            config.NogoTrialNum = Int32.Parse(textBox_nogoTrialNum.Text); ;
+            config.saved_folder = textBox_savedFolder.Text;
+            config.audioFile_Correct = textBox_audioFile_Correct.Text;
+            config.audioFile_Error = textBox_audioFile_Error.Text;
+            config.configTimes = configTimes;
+            config.configTarget = configTarget;
+            config.configColors = configColors;
+
+
+            // Write to Json file
+            string json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            File.WriteAllText(configFile, json);
+        }
         private void btnLoadConf_Click(object sender, RoutedEventArgs e)
         {
 

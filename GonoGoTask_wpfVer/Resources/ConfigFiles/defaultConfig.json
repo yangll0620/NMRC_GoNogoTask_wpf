@@ -10,7 +10,8 @@
         "Nogo Show Range Time": [ 1, 3 ],       
         "Max Reaction Time": 0.8,
         "Max Reach Time": 0.8,
-        "Visual Feedback Show Time": 2
+        "Visual Feedback Show Time": 1,
+        "Inter Trials Time": 0.5
     },
     "Target":
     {

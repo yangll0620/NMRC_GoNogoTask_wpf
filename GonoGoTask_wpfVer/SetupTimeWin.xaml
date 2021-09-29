@@ -33,13 +33,23 @@
                     </Grid.ColumnDefinitions>
 
 
-
                     <TextBlock Grid.Row="1" Grid.Column="0"
                                 HorizontalAlignment="Right" VerticalAlignment="Center" 
                                        TextAlignment="Right" Padding="3"
                                    Height="23" Margin="0,12,65,0"  FontWeight="Normal"  >
+                            t_InterTrial</TextBlock>
+                    <TextBox x:Name="textBox_tInterTrial" Grid.Row="1" Grid.Column="0"
+                                     HorizontalAlignment="Right" VerticalAlignment="Center" 
+                                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                     Height="23" Width="50" Margin="0,10,10,0" 
+                                     TextWrapping="Wrap"   FontWeight="Normal" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" 
+                                       TextAlignment="Right" Padding="3"
+                                   Height="23" Margin="0,12,65,0"  FontWeight="Normal"  >
                             t_VisualFeedback</TextBlock>
-                    <TextBox x:Name="textBox_tVisFeedback" Grid.Row="1" Grid.Column="0"
+                    <TextBox x:Name="textBox_tVisFeedback" Grid.Row="1" Grid.Column="1"
                                      HorizontalAlignment="Right" VerticalAlignment="Center" 
                                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                      Height="23" Width="50" Margin="0,10,10,0" 
@@ -150,10 +160,10 @@
                 Margin="0,10,120,0"  Width="60" Height="25" 
                 FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" Click="Btn_OK_Click"  />
 
-        <Button x:Name="btn_Cancle"
-            Content="Cancle" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="1" 
+        <Button x:Name="btn_Cancel"
+            Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="1" 
                 Margin="0,10,10,0"  Width="60" Height="25" 
-                FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" Click="Btn_Cancle_Click" />
+                FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" Click="Btn_Cancel_Click" />
 
 
     </Grid>
