@@ -52,8 +52,11 @@ namespace GonoGoTask_wpfVer
         public MainWindow()
         {
             InitializeComponent();
+        }
 
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             // Get the first not Primary Screen 
             swf.Screen showMainScreen = Utility.Detect_oneNonPrimaryScreen();
             // Show the  MainWindow on the Touch Screen
@@ -64,7 +67,7 @@ namespace GonoGoTask_wpfVer
 
             // locate serial Port Name
             serialPortIO8_name = SerialPortIO8.Locate_serialPortIO8();
-            if (String.Equals(serialPortIO8_name,""))
+            if (String.Equals(serialPortIO8_name, ""))
             {
                 btn_start.IsEnabled = false;
                 btn_comReconnect.Visibility = Visibility.Visible;
@@ -86,7 +89,7 @@ namespace GonoGoTask_wpfVer
             }
 
             // Load Default Config File
-            LoadConfigFile("");
+            LoadConfigFile("defaultConfig");
 
             if (textBox_NHPName.Text != "" && serialPortIO8_name != null)
             {
@@ -184,6 +187,11 @@ namespace GonoGoTask_wpfVer
             Win_TestStartpadJuicer.Left = Rect_showMainScreen.Left;
 
             Win_TestStartpadJuicer.Show();
+        }
+
+        private void MenuItem_SetupSaveFolderAudio(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void MenuItem_SaveConf_Click(object sender, RoutedEventArgs e)
@@ -399,7 +407,7 @@ namespace GonoGoTask_wpfVer
 
             // Read the Config. File and convert to JsonObject
             string jsonStr;
-            if (String.IsNullOrEmpty(configFile))
+            if (String.Equals(configFile, "defaultConfig"))
             {
                 var assembly = Assembly.GetExecutingAssembly();
                 var defaultConfigFile = "GonoGoTask_wpfVer.Resources.ConfigFiles.defaultConfig.json";
@@ -421,31 +429,36 @@ namespace GonoGoTask_wpfVer
                 }
             }
                       
-            dynamic array = JsonConvert.DeserializeObject(jsonStr);
+            dynamic config = JsonConvert.DeserializeObject(jsonStr);
             
             /* ---- Config into the Interface ---- */
-            var config = array[0];
-            textBox_NHPName.Text = config["NHP Name"];
-            textBox_goTrialNum.Text = config["Go Trials Num"];
-            textBox_nogoTrialNum.Text = config["noGo Trials Num"];
+            textBox_NHPName.Text = (string)config["NHP Name"];
+            textBox_goTrialNum.Text = (string)config["Go Trials Num"];
+            textBox_nogoTrialNum.Text = (string)config["noGo Trials Num"];
 
+            textBox_audioFile_Correct.Text = (string)config["audioFile_Correct"];
+            textBox_audioFile_Error.Text = (string)config["audioFile_Error"];
+            textBox_savedFolder.Text = (string)config["saved folder"]; 
+            if (String.Compare(textBox_savedFolder.Text, "default", true) == 0)
+            {
+                textBox_savedFolder.Text = System.IO.Path.GetFullPath(@"..\\..\\GoNogoTaskSave"); ;
+            }
 
-            // Juicer Given Time
-            var configJuicer = config["JuicerGivenTime"];
-            t_JuicerCorrectGivenS = float.Parse((string)configJuicer["Correct"]);
-            t_JuicerCloseGivenS = float.Parse((string)configJuicer["Close"]);
 
 
             // Times Sections
             var configTime = config["Times"];
             tRange_ReadyTimeS = new float[] {float.Parse((string)configTime["Ready Show Time Range"][0]), float.Parse((string)configTime["Ready Show Time Range"][1])};
             tRange_CueTimeS = new float[] {float.Parse((string)configTime["Cue Show Time Range"][0]), float.Parse((string)configTime["Cue Show Time Range"][1])};
-            tRange_NogoShowTimeS = new float[] { float.Parse((string)configTime["Nogo Show Range Time"][0]), float.Parse((string)configTime["Nogo Show Range Time"][1]) };
+            tRange_NogoShowTimeS = new float[] { float.Parse((string)configTime["Nogo Show Time Range"][0]), float.Parse((string)configTime["Nogo Show Time Range"][1]) };
             tMax_ReactionTimeS = float.Parse((string)configTime["Max Reaction Time"]);
             tMax_ReachTimeS = float.Parse((string)configTime["Max Reach Time"]);
             t_InterTrialS = float.Parse((string)configTime["Inter Trials Time"]);
             t_VisfeedbackShowS = float.Parse((string)configTime["Visual Feedback Show Time"]);
-            
+            t_JuicerCorrectGivenS = float.Parse((string)configTime["Juice Correct Given Time"]);
+            t_JuicerCloseGivenS = float.Parse((string)configTime["Juice Close Given Time"]);
+
+
             // Color Sections
             var configColors = config["Colors"];
             goFillColorStr = configColors["Go Fill Color"];
@@ -461,18 +474,9 @@ namespace GonoGoTask_wpfVer
 
             // Target Sections
             var configTarget = config["Target"];      
-            targetDiaInch = float.Parse((string)configTarget["Target Diameter"]);
+            targetDiaInch = float.Parse((string)configTarget["Target Diameter (inch)"]);
             targetDisFromCenterInch = float.Parse((string)configTarget["Target Distance from Center"]);
             closeMarginPercentage = int.Parse((string)configTarget["Close Margin Percentage"]);
-
-
-            audioFile_Correct = config["audioFile_Correct"];
-            audioFile_Error = config["audioFile_Error"];
-            saved_folder = config["saved_folder"];
-            if (String.Compare(saved_folder, "default", true) == 0)
-            {
-                saved_folder = @"C:\\GonoGoSave";
-            }
         }
 
         private void SaveConfigFile(string configFile)
@@ -483,6 +487,8 @@ namespace GonoGoTask_wpfVer
             // config Times
             ConfigTimes configTimes = new ConfigTimes();
             configTimes.tRange_ReadyTime = tRange_ReadyTimeS;
+            configTimes.tRange_CueTime = tRange_CueTimeS;
+            configTimes.tRange_NogoShowTime = tRange_NogoShowTimeS;
             configTimes.tMax_ReactionTime = tMax_ReactionTimeS;
             configTimes.tMax_ReachTime = tMax_ReachTimeS;
             configTimes.t_InterTrial = t_InterTrialS;
@@ -516,13 +522,13 @@ namespace GonoGoTask_wpfVer
             Config_GoNogoTask config = new Config_GoNogoTask();
             config.NHPName = textBox_NHPName.Text;
             config.GoTrialNum = Int32.Parse(textBox_goTrialNum.Text);
-            config.NogoTrialNum = Int32.Parse(textBox_nogoTrialNum.Text); ;
-            config.saved_folder = textBox_savedFolder.Text;
-            config.audioFile_Correct = textBox_audioFile_Correct.Text;
-            config.audioFile_Error = textBox_audioFile_Error.Text;
+            config.NogoTrialNum = Int32.Parse(textBox_nogoTrialNum.Text);
             config.configTimes = configTimes;
             config.configTarget = configTarget;
             config.configColors = configColors;
+            config.saved_folder = textBox_savedFolder.Text;
+            config.audioFile_Correct = textBox_audioFile_Correct.Text;
+            config.audioFile_Error = textBox_audioFile_Error.Text;
 
 
             // Write to Json file

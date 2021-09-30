@@ -7,3 +7,8 @@ Pre-Setup
 	*. Control Interface showed on the non primary screen if has.
 
 	*. The presentational task is showed on the primary screen. 
+
+
+2. The default time setup 
+
+.. image:: figures/defaultTimeSetup.png

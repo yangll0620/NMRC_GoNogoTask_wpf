@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:GonoGoTask_wpfVer"
         mc:Ignorable="d"
         Title="GonoGoTask" Height="800" Width="850"
-        Closing="Window_Closing" Icon="GonoGo2.ico">
+        Closing="Window_Closing" Loaded="Window_Loaded"
+        Icon="GonoGo2.ico">
 
     <Canvas x:Name="canvas1"
                 HorizontalAlignment="Left" Height="550" Margin="0,0,0,0" VerticalAlignment="Top" Width="800">
@@ -21,9 +22,10 @@
                 </MenuItem>
 
                 <MenuItem Header="_Settings">
-                    <MenuItem Header="_Color Settings" Click="MenuItem_SetupColors"/>
+                    <MenuItem Header="_Color Setting" Click="MenuItem_SetupColors"/>
                     <MenuItem Header="_Time Setting" Click="MenuItem_SetupTime"/>
                     <MenuItem Header="_Target Setting" Click="MenuItem_SetupTarget"/>
+                    <MenuItem Header="_Save/Audio Setting" Click="MenuItem_SetupSaveFolderAudio"/>
                 </MenuItem>
 
                 <MenuItem Header="Tools">
@@ -39,8 +41,8 @@
 
             <!--Grid RowDefinitions: 0, 1, 2-->
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
                 <RowDefinition Height="4*"/>
+                <RowDefinition Height="2*"/>
                 <RowDefinition Height="8*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
@@ -50,22 +52,27 @@
             <GroupBox Header="Required Inputs" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0"
                   Margin="5,15,0,0"  
                   FontFamily="Microsoft Sans Serif" FontWeight="Bold" Grid.ColumnSpan="2">
-                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="50"  Width="780" Margin="0,10,0,0">
+                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="100"  Width="780" Margin="0,10,0,0">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="2.5*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Grid Margin="0">
+                    <Grid Grid.Row="0" Grid.Column ="1">
                         <Label Content="NHP Name" HorizontalAlignment="Left"  VerticalAlignment="top" 
-                       HorizontalContentAlignment="Right"
-                       Height="25" Margin="10,10,0,0" FontWeight="Normal" />
+                               HorizontalContentAlignment="Right"
+                               Height="25" Margin="10,10,0,0" FontWeight="Normal" />
 
                         <TextBox x:Name="textBox_NHPName" HorizontalAlignment="Left" VerticalAlignment="Top"
-                         HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                         Width="75" Height="25" Margin="80,10,10,0"
-                       TextWrapping="Wrap"  FontWeight="Normal" TextChanged="TextBox_NHPName_TextChanged" />
+                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                 Width="75" Height="25" Margin="80,10,10,0"
+                                 TextWrapping="Wrap"  FontWeight="Normal" TextChanged="TextBox_NHPName_TextChanged" />
                     </Grid>
 
                     <Grid Grid.Column="1">
@@ -98,17 +105,16 @@
 
 
 
-                    <TextBlock  x:Name="textblock_comState"
-                    TextWrapping="WrapWithOverflow"  Grid.Column="2"   
-                                   HorizontalAlignment="Right" VerticalAlignment="Top" 
-                                   Height="40" Margin="0,10,100,0"  FontSize="11" >
-                    <Run x:Name="run_comState">COM State</Run>
-                    <LineBreak/>
-                    <Run x:Name ="run_instruction">COM instruction</Run>
+                    <TextBlock  x:Name="textblock_comState" TextWrapping="WrapWithOverflow"  Grid.Column="1"   
+                                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                                Height="40" Margin="0,10,100,0"  FontSize="11" >
+                        <Run x:Name="run_comState">COM State</Run>
+                        <LineBreak/>
+                        <Run x:Name ="run_instruction">COM instruction</Run>
                     </TextBlock>
-                    <Button x:Name="btn_comReconnect" 
-                    Content="reCheck" Grid.Column="2" HorizontalAlignment="Right" 
-                            Margin="0,10,10,0" VerticalAlignment="Top" Width="75"  Click="Btn_comReconnect_Click"/>
+                    <Button x:Name="btn_comReconnect" Content="reCheck" Grid.Column="1" 
+                            HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75"  
+                            Click="Btn_comReconnect_Click"/>
                 </Grid>
             </GroupBox>
 

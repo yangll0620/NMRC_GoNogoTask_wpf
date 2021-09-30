@@ -14,10 +14,6 @@ namespace GonoGoTask_wpfVer
         [JsonProperty(PropertyName = "noGo Trials Num")]
         public int NogoTrialNum;
 
-        [JsonProperty(PropertyName = "saved folder")]
-        public string saved_folder;
-
-        public string audioFile_Correct, audioFile_Error;
 
         [JsonProperty(PropertyName = "Times")]
         public ConfigTimes configTimes;
@@ -28,7 +24,14 @@ namespace GonoGoTask_wpfVer
 
         [JsonProperty(PropertyName = "Colors")]
         public ConfigColors configColors;
- 
+
+        public string audioFile_Correct, audioFile_Error;
+
+        [JsonProperty(PropertyName = "saved folder")]
+        public string saved_folder;
+
+        
+
     }
 
 
@@ -89,7 +92,7 @@ namespace GonoGoTask_wpfVer
         [JsonProperty(PropertyName = "Cue Crossing Color")]
         public string cueCrossingColorStr;
 
-        [JsonProperty(PropertyName = "Wait Start Background")]
+        [JsonProperty(PropertyName = "Wait Trial Start Background")]
         public string BKWaitTrialColorStr;
 
 

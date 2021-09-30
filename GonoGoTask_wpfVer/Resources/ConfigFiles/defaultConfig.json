@@ -1,44 +1,45 @@
-[
-  {
-    "NHP Name": "Barb",
-    "Go Trials Num": 20,
-    "noGo Trials Num": 5,
-    "Times":
-    {
-        "Ready Show Time Range": [ 1, 3 ],
-        "Cue Show Time Range": [ 1, 3 ],
-        "Nogo Show Range Time": [ 1, 3 ],       
-        "Max Reaction Time": 0.8,
-        "Max Reach Time": 0.8,
-        "Visual Feedback Show Time": 1,
-        "Inter Trials Time": 0.5
-    },
-    "Target":
-    {
-        "Target Diameter": 3,
-        "Target Distance from Center": 3,
-        "Close Margin Percentage": 50,
-    },
-    "Colors":
-    {
-        "Go Fill Color": "Green",
-        "noGo Fill Color": "Yellow",
-        "Cue Crossing Color": "Black",
-        "Wait Trial Start Background": "Black",
-        "Trial Background": "WhiteSmoke",
-        "Correct Fill": "Magenta",
-        "Correct Outline": "Magenta",
-        "Error Fill":"WhiteSmoke",
-        "Error Outline": "Red"     
-    },
-    "JuicerGivenTime":
-    {
-        "Correct": 0.8,
-        "Close":0.5
-    },
-
-    "audioFile_Correct": "default",
-    "audioFile_Error": "default",
-    "saved_folder": "C:\\GonoGoSave"
-  }
-]
+{
+  "NHP Name": "Barb",
+  "Go Trials Num": 20,
+  "noGo Trials Num": 5,
+  "Times": {
+    "Ready Show Time Range": [
+      2.0,
+      2.0
+    ],
+    "Cue Show Time Range": [
+      2.0,
+      2.0
+    ],
+    "Nogo Show Time Range": [
+      1.5,
+      1.5
+    ],
+    "Max Reaction Time": 0.8,
+    "Max Reach Time": 0.8,
+    "Visual Feedback Show Time": 1.0,
+    "Inter Trials Time": 0.5,
+    "Juice Correct Given Time": 0.8,
+    "Juice Close Given Time": 0.5
+  },
+  "Target": {
+    "Target Diameter (inch)": 3.0,
+    "Target Distance from Center": 3.0,
+    "Close Margin Percentage": 50,
+    "optPostions_OCenter_List": null
+  },
+  "Colors": {
+    "Go Fill Color": "Green",
+    "noGo Fill Color": "Yellow",
+    "Cue Crossing Color": "Black",
+    "Wait Trial Start Background": "Black",
+    "Trial Background": "WhiteSmoke",
+    "Correct Fill": "Magenta",
+    "Correct Outline": "Magenta",
+    "Error Fill": "WhiteSmoke",
+    "Error Outline": "Red"
+  },
+  "audioFile_Correct": "default",
+  "audioFile_Error": "default",
+  "saved folder": "default"
+}
