@@ -11,6 +11,7 @@ using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Newtonsoft.Json;
 using System.Reflection;
+using System.Linq.Expressions;
 
 namespace GonoGoTask_wpfVer
 {
@@ -194,6 +195,16 @@ namespace GonoGoTask_wpfVer
 
         }
 
+        private void TextBox_nogoTrialNumPerPosSession_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TextBox_totalTrialNumPerPosSession_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
         private void MenuItem_SaveConf_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.SaveFileDialog saveFileDlg = new Microsoft.Win32.SaveFileDialog
@@ -267,6 +278,18 @@ namespace GonoGoTask_wpfVer
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Inch to Pixal Ratio", Utility.ratioIn2Pixal.ToString()));
 
             }
+        }
+
+
+        public static TAttribute GetPropertyAttribute<TType, TAttribute>(Expression<Func<TType, object>> property)
+            where TAttribute : Attribute
+        {
+            var memberExpression = property.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new ArgumentException("Expression must be a property");
+
+            return memberExpression.Member
+                .GetCustomAttribute<TAttribute>();
         }
 
 
@@ -433,6 +456,8 @@ namespace GonoGoTask_wpfVer
             
             /* ---- Config into the Interface ---- */
             textBox_NHPName.Text = (string)config["NHP Name"];
+            textBox_totalTrialNumPerPosSess.Text = (string)config["Total Trial Num Per Position Per Session"];
+            textBox_nogoTrialNumPerPosSess.Text = (string)config["noGo Trial Num Per Position Per Session"];
             textBox_goTrialNum.Text = (string)config["Go Trials Num"];
             textBox_nogoTrialNum.Text = (string)config["noGo Trials Num"];
 
@@ -521,6 +546,8 @@ namespace GonoGoTask_wpfVer
             // Combine all configs
             Config_GoNogoTask config = new Config_GoNogoTask();
             config.NHPName = textBox_NHPName.Text;
+            config.TotalTrialNumPerPosSess = Int32.Parse(textBox_totalTrialNumPerPosSess.Text);
+            config.NogoTrialNumPerPosSess = Int32.Parse(textBox_nogoTrialNumPerPosSess.Text);
             config.GoTrialNum = Int32.Parse(textBox_goTrialNum.Text);
             config.NogoTrialNum = Int32.Parse(textBox_nogoTrialNum.Text);
             config.configTimes = configTimes;

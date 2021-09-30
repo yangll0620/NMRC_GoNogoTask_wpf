@@ -1,5 +1,7 @@
 {
   "NHP Name": "Barb",
+  "Total Trial Num Per Position Per Session": 10,
+  "noGo Trial Num Per Position Per Session": 2,
   "Go Trials Num": 20,
   "noGo Trials Num": 5,
   "Times": {
