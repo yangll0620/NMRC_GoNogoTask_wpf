@@ -14,12 +14,6 @@ namespace GonoGoTask_wpfVer
         [JsonProperty(PropertyName = "noGo Trial Num Per Position Per Session")]
         public int NogoTrialNumPerPosSess;
 
-        [JsonProperty(PropertyName = "Go Trials Num")]
-        public int GoTrialNum;
-
-        [JsonProperty(PropertyName = "noGo Trials Num")]
-        public int NogoTrialNum;
-
 
         [JsonProperty(PropertyName = "Times")]
         public ConfigTimes configTimes;
@@ -66,23 +60,18 @@ namespace GonoGoTask_wpfVer
 
         [JsonProperty(PropertyName = "Juice Correct Given Time")]
         public float t_JuicerCorrectGiven;
-
-        [JsonProperty(PropertyName = "Juice Close Given Time")]
-        public float t_JuicerCloseGiven;
     }
 
 
     class ConfigTarget
     {
-        [JsonProperty(PropertyName = "Target Diameter (inch)")]
+        [JsonProperty(PropertyName = "Target Diameter (Inch)")]
         public float targetDiaInch;
 
-        [JsonProperty(PropertyName = "Target Distance from Center")]
-        public float targetDisFromCenter;
+        [JsonProperty(PropertyName = "Target No of Positions")]
+        public int targetNoOfPositions;
 
-        [JsonProperty(PropertyName = "Close Margin Percentage")]
-        public int closeMarginPercentage;
-
+        [JsonProperty(PropertyName = "Optional Positions")]
         public List<int[]> optPostions_OCenter_List;
     }
 

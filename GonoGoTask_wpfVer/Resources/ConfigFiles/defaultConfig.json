@@ -1,9 +1,6 @@
 {
   "NHP Name": "Barb",
-  "Total Trial Num Per Position Per Session": 10,
   "noGo Trial Num Per Position Per Session": 2,
-  "Go Trials Num": 20,
-  "noGo Trials Num": 5,
   "Times": {
     "Ready Show Time Range": [
       2.0,
@@ -21,14 +18,25 @@
     "Max Reach Time": 0.8,
     "Visual Feedback Show Time": 1.0,
     "Inter Trials Time": 0.5,
-    "Juice Correct Given Time": 0.8,
-    "Juice Close Given Time": 0.5
+    "Juice Correct Given Time": 0.8
   },
   "Target": {
-    "Target Diameter (inch)": 3.0,
-    "Target Distance from Center": 3.0,
-    "Close Margin Percentage": 50,
-    "optPostions_OCenter_List": null
+    "Target Diameter (Inch)": 3.0,
+    "Target No of Positions": 3,
+    "Optional Positions": [
+      [
+        396,
+        0
+      ],
+      [
+        -396,
+        0
+      ],
+      [
+        0,
+        -396
+      ]
+    ]
   },
   "Colors": {
     "Go Fill Color": "Green",
@@ -43,5 +51,6 @@
   },
   "audioFile_Correct": "default",
   "audioFile_Error": "default",
-  "saved folder": "default"
+  "saved folder": "H:\\My Drive\\NMRC_umn\\Projects\\ProjDev\\GoNogoTaskDev\\GononGoTask_wpf\\GonoGoTask_wpfVer\\GoNogoTaskSave",
+  "Total Trial Num Per Position Per Session": 10
 }

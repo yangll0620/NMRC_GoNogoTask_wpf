@@ -1,0 +1,102 @@
+﻿<Window x:Class="GonoGoTask_wpfVer.SetupSavefolderAudios"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GonoGoTask_wpfVer"
+        mc:Ignorable="d"
+        Title="Setup Savefolder Audios" Height="300" Width="800"
+        Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <!--Save Folder and Audios Parameters-->
+        <Grid Grid.Row="0">
+            <GroupBox Header="Save Folder and Audios Parameters" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="5,15,0,0" FontFamily="Microsoft Sans Serif" FontWeight="Bold">
+                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="150"  Width="750" Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Label Content="Saved Folder" 
+                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
+                                   Height="25" Margin="0,0,0,0" FontWeight="Normal" />
+
+                        <TextBox x:Name="textBox_savedFolder" IsEnabled="False"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top"
+                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                 Width="550" Height="40" Margin="110,0,0,0"
+                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
+
+                        <Button x:Name="btn_SelectSavefolder" 
+                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,0,0,0"  Width="60" Height="25" 
+                                    FontFamily="Microsoft Sans Serif" 
+                                    Click="Btn_SelectSavefolder_Click" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="66*"/>
+                            <ColumnDefinition Width="49*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Corrent Audio File" 
+                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
+                                   Height="26" Margin="0,12" FontWeight="Normal" />
+
+                        <TextBox x:Name="textBox_audioFile_Correct" IsEnabled="False"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top"
+                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                 Width="550" Height="40" Margin="110,0,0,0"
+                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
+
+                        <Button x:Name="btn_Select_AudioFile_Correct" 
+                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,12"  Width="60" Height="26" 
+                                    FontFamily="Microsoft Sans Serif" 
+                                    Click="Btn_Select_AudioFile_Correct_Click" Grid.Column="1" />
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Label Content="Error Audio File" 
+                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
+                                   Height="25" Margin="0,0,0,0" FontWeight="Normal"  />
+
+                        <TextBox x:Name="textBox_audioFile_Error" IsEnabled="False"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top"
+                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                 Width="550" Height="40" Margin="110,0,0,0"
+                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
+
+                        <Button x:Name="btn_Select_AudioFile_Error" 
+                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,0,0,0"  Width="60" Height="25" 
+                                    FontFamily="Microsoft Sans Serif" 
+                                    Click="Btn_Select_AudioFile_Error_Click" />
+                    </Grid>
+
+                </Grid>
+            </GroupBox>
+        </Grid>
+        
+        <!--Save and Cancel Buttons-->
+        <Grid Grid.Row="1">
+            <Button x:Name="btn_OK"
+            Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Margin="0,0,100,10"  Width="60" Height="25" 
+                FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" Click="Btn_OK_Click"  />
+
+            <Button x:Name="btn_Cancel"
+            Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Margin="0,0,10,10"  Width="60" Height="25" 
+                FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" Click="Btn_Cancel_Click" />
+        </Grid>
+    </Grid>
+</Window>

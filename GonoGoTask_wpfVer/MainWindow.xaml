@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GonoGoTask_wpfVer"
         mc:Ignorable="d"
-        Title="GonoGoTask" Height="1000" Width="850"
+        Title="GonoGoTask" Height="800" Width="850"
         Closing="Window_Closing" Loaded="Window_Loaded"
         Icon="GonoGo2.ico">
 
     <Canvas x:Name="canvas1"
-                HorizontalAlignment="Left" Height="550" Margin="0,0,0,0" VerticalAlignment="Top" Width="800">
+                HorizontalAlignment="Left" Height="800" Margin="0,0,0,0" VerticalAlignment="Top" Width="800">
 
+        <!--Drop Down Menu-->
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File" FontSize="14">
@@ -27,142 +28,109 @@
                     <MenuItem Header="_Target Setting" Click="MenuItem_SetupTarget"/>
                     <MenuItem Header="_Save/Audio Setting" Click="MenuItem_SetupSaveFolderAudio"/>
                 </MenuItem>
-
-                <MenuItem Header="Tools">
-                    <MenuItem Header="_Show All Optional Targets" Click="btnShowAllTargets_Click"/>
-                    <MenuItem Header="_Show Close Circle" IsCheckable="True" Checked="MenuItem_showCloseCircle" Unchecked="MenuItem_noShowCloseCircle"/>
-                    <MenuItem Header="_Test Touchpad, Juicer " Click="btnTestTouchpadJuicer_Click"/>
-                </MenuItem>
             </Menu>
         </DockPanel>
 
 
-        <Grid Margin="0, 20, 0, 0" Height="1000"  Width="800">
+        <Grid Margin="0, 20, 0, 0" Height="750"  Width="800">
 
             <!--Grid RowDefinitions: 0, 1, 2-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
-                <RowDefinition Height="6*"/>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="7*"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
 
-            <!--Required Inputs GroupBox-->
-            <GroupBox Header="Required Inputs" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0"
-                  Margin="5,15,0,0"  
-                  FontFamily="Microsoft Sans Serif" FontWeight="Bold" Grid.ColumnSpan="2">
-                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="100"  Width="780" Margin="0,10,0,0">
+            <!--Required Inputs-->
+            <Grid Grid.Row="0">
+                <GroupBox Header="Required Inputs" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  Margin="5,15,0,0"  FontFamily="Microsoft Sans Serif" FontWeight="Bold">
+                    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="100"  Width="780" Margin="0,10,0,0">
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <Grid Grid.Column ="0">
-                            <Label Content="NHP Name" HorizontalAlignment="Left"  VerticalAlignment="top" 
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column ="0">
+                                <Label Content="NHP Name" HorizontalAlignment="Left"  VerticalAlignment="top" 
                                HorizontalContentAlignment="Right"
                                Height="25" Margin="10,10,0,0" FontWeight="Normal" />
 
-                            <TextBox x:Name="textBox_NHPName" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                <TextBox x:Name="textBox_NHPName" HorizontalAlignment="Left" VerticalAlignment="Top"
                                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                  Width="75" Height="25" Margin="80,10,10,0"
                                  TextWrapping="Wrap"  FontWeight="Normal" TextChanged="TextBox_NHPName_TextChanged" />
-                        </Grid>
+                            </Grid>
 
-                        <Grid Grid.Column="1">
-                            <TextBlock  x:Name="textblock_comState" TextWrapping="WrapWithOverflow"   
+                            <Grid Grid.Column="1">
+                                <TextBlock  x:Name="textblock_comState" TextWrapping="WrapWithOverflow"   
                                 HorizontalAlignment="Right" VerticalAlignment="Top" 
                                 Height="40" Margin="0,10,100,0"  FontSize="11" >
                         <Run x:Name="run_comState">COM State</Run>
                         <LineBreak/>
                         <Run x:Name ="run_instruction">COM instruction</Run>
-                            </TextBlock>
-                            <Button x:Name="btn_comReconnect" Content="reCheck" 
+                                </TextBlock>
+                                <Button x:Name="btn_comReconnect" Content="reCheck" 
                             HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75"  
                             Click="Btn_comReconnect_Click"/>
+                            </Grid>
+
                         </Grid>
 
-                        <Grid Grid.Column="2">
+
+                        <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Label Content="# of Success Go Trials" Grid.Column="0"
-                                   HorizontalAlignment="Left" VerticalAlignment="top" 
-                               HorizontalContentAlignment="Right" VerticalContentAlignment="Center"                             
-                               Height="25" Margin="5,10,0,0"  FontWeight="Normal" FontSize="11"/>
-                            <TextBox x:Name="textBox_goTrialNum"  Grid.Column="0"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top" 
-                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                 Height="25" Width ="75" Margin="125,10,5,0" 
-                                 TextWrapping="Wrap"   FontSize="11" FontWeight="Normal" />
-
-                            <Label Content="# of Success noGo Trials" Grid.Column="1"
-                                   HorizontalAlignment="Left" VerticalAlignment="Top" 
-                               HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  
-                               Height="25" Margin="5,10,0,0"  FontSize="11" FontWeight="Normal" />
-                            <TextBox x:Name="textBox_nogoTrialNum"  Grid.Column="1"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top" 
-                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                 Height="25" Width ="75" Margin="135,10,0,0" 
-                                 TextWrapping="Wrap"  FontWeight="Normal" FontSize="11"/>
-
-                        </Grid>
-
-                    </Grid>
-
-
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Grid Grid.Column ="0">
-                            <Label Content="Total Trial Num/Position/Session" HorizontalAlignment="Left"  VerticalAlignment="top" 
+                            <Grid Grid.Column ="0">
+                                <Label Content="Total Trial Num/Position/Session" HorizontalAlignment="Left"  VerticalAlignment="top" 
                                HorizontalContentAlignment="Right"
                                Height="25" Margin="10,10,0,0" FontWeight="Normal" />
 
-                            <TextBox x:Name="textBox_totalTrialNumPerPosSess" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                <TextBox x:Name="textBox_totalTrialNumPerPosSess" HorizontalAlignment="Left" VerticalAlignment="Top"
                                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                  Width="75" Height="25" Margin="200,10,10,0"
                                  TextWrapping="Wrap"  FontWeight="Normal" TextChanged="TextBox_totalTrialNumPerPosSession_TextChanged" />
-                        </Grid>
+                            </Grid>
 
-                        <Grid Grid.Column ="1">
-                            <Label Content="Nogo Trial Num/Position/Session" HorizontalAlignment="Left"  VerticalAlignment="top" 
+                            <Grid Grid.Column ="1">
+                                <Label Content="Nogo Trial Num/Position/Session" HorizontalAlignment="Left"  VerticalAlignment="top" 
                                HorizontalContentAlignment="Right"
                                Height="25" Margin="10,10,0,0" FontWeight="Normal" />
 
-                            <TextBox x:Name="textBox_nogoTrialNumPerPosSess" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                <TextBox x:Name="textBox_nogoTrialNumPerPosSess" HorizontalAlignment="Left" VerticalAlignment="Top"
                                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                  Width="75" Height="25" Margin="200,10,10,0"
                                  TextWrapping="Wrap"  FontWeight="Normal" TextChanged="TextBox_nogoTrialNumPerPosSession_TextChanged" />
+                            </Grid>
                         </Grid>
-                    </Grid> 
 
-                    
-                </Grid>
-            </GroupBox>
+
+                    </Grid>
+                </GroupBox>
+            </Grid>
+
+           
+            
 
             <!--Realtime Feedback-->
             <Grid Grid.Row="1">
                 <GroupBox Header="Realtime Feedback" HorizontalAlignment="Left" VerticalAlignment="Top"
                           Margin="5,15,0,0" FontFamily="Microsoft Sans Serif" FontWeight="Bold">
-                    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="350"  Width="780" Margin="0,10,0,0">
+                    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="450"  Width="780" Margin="0,10,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="3*"/>
+                            <RowDefinition Height="4*"/>
                         </Grid.RowDefinitions>
 
                         <!--Session Feedback-->
@@ -177,7 +145,7 @@
                                HorizontalContentAlignment="Right"
                                Height="25" Margin="10,10,0,0" FontWeight="Normal" />
 
-                                <TextBox x:Name="textBox_currSessioni"  IsEnabled="False"
+                                <TextBox x:Name="textBox_feedback_currSessioni"  IsEnabled="False"
                                          HorizontalAlignment="Left" VerticalAlignment="Top"
                                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                          Width="75" Height="25" Margin="200,10,10,0"
@@ -189,11 +157,11 @@
                                HorizontalContentAlignment="Right"
                                Height="25" Margin="10,10,0,0" FontWeight="Normal" />
 
-                                <TextBox x:Name="textBox_TrialsLeftCurrSess" IsEnabled="False"
+                                <TextBox x:Name="textBox_feedback_TrialsLeftCurrSess" IsEnabled="False"
                                          HorizontalAlignment="Left" VerticalAlignment="Top"
                                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                  Width="75" Height="25" Margin="200,10,10,0"
-                                 TextWrapping="Wrap"  FontWeight="Normal" />
+                                 TextWrapping="Wrap"  FontWeight="Normal"  />
                             </Grid>
                         </Grid>
 
@@ -212,7 +180,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            
+
                             <!--- Target Feedback Title -->
                             <Label Content="Total Go" Grid.Row="0" Grid.Column="1"
                                        HorizontalAlignment="Center"  VerticalAlignment="top" 
@@ -284,7 +252,7 @@
                                         TextWrapping="Wrap"  FontWeight="Normal" />
 
                             <!--- Target2 Feedback -->
-                            <Label Content="Target 0" Grid.Row="3" Grid.Column="0"
+                            <Label Content="Target 2" Grid.Row="3" Grid.Column="0"
                                 HorizontalAlignment="Left"  VerticalAlignment="top" 
                                 HorizontalContentAlignment="Right"
                                 Height="25" Margin="10,10,0,0" FontWeight="Normal" />
@@ -313,170 +281,8 @@
                 </GroupBox>
             </Grid>
 
-            <!--Save Folder and Audios Parameters-->
-            <GroupBox Header="Save Folder and Audios Parameters" Grid.Row="2" 
-                      HorizontalAlignment="Left" VerticalAlignment="Top"
-                      Margin="5,15,0,0" FontFamily="Microsoft Sans Serif" FontWeight="Bold">
-                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="150"  Width="780" Margin="0,10,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <Grid Grid.Row="0">
-                        <Label Content="Saved Folder" 
-                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
-                                   Height="25" Margin="0,0,0,0" FontWeight="Normal" />
-
-                        <TextBox x:Name="textBox_savedFolder" IsEnabled="False"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top"
-                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                                 Width="600" Height="40" Margin="110,0,0,0"
-                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
-
-                        <Button x:Name="btn_SelectSavefolder" 
-                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                    Margin="0,0,0,0"  Width="60" Height="25" 
-                                    FontFamily="Microsoft Sans Serif" 
-                                    Click="Btn_SelectSavefolder_Click" />
-                    </Grid>
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="66*"/>
-                            <ColumnDefinition Width="49*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Corrent Audio File" 
-                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
-                                   Height="26" Margin="0,12" FontWeight="Normal" />
-
-                        <TextBox x:Name="textBox_audioFile_Correct" IsEnabled="False"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top"
-                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                                 Width="600" Height="40" Margin="110,0,0,0"
-                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
-
-                        <Button x:Name="btn_Select_AudioFile_Correct" 
-                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                    Margin="0,12"  Width="60" Height="26" 
-                                    FontFamily="Microsoft Sans Serif" 
-                                    Click="Btn_Select_AudioFile_Correct_Click" Grid.Column="1" />
-                    </Grid>
-                    <Grid Grid.Row="2">
-                        <Label Content="Error Audio File" 
-                                   HorizontalAlignment="Left"  VerticalAlignment="Center" HorizontalContentAlignment="Right"
-                                   Height="25" Margin="0,0,0,0" FontWeight="Normal"  />
-
-                        <TextBox x:Name="textBox_audioFile_Error" IsEnabled="False"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top"
-                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                                 Width="600" Height="40" Margin="110,0,0,0"
-                                 TextWrapping="Wrap"  FontWeight="Normal" Grid.ColumnSpan="2" />
-
-                        <Button x:Name="btn_Select_AudioFile_Error" 
-                                    Content="Browse" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                    Margin="0,0,0,0"  Width="60" Height="25" 
-                                    FontFamily="Microsoft Sans Serif" 
-                                    Click="Btn_Select_AudioFile_Error_Click" />
-                    </Grid>
-
-                </Grid>
-            </GroupBox>
-
-            <!--Old Realtime Feedback-->
-            <Grid Grid.Row="3">
-                <GroupBox Header="Realtime Feedback" HorizontalAlignment="Left" VerticalAlignment="Top"
-                          Margin="5,15,0,0" FontFamily="Microsoft Sans Serif" FontWeight="Bold">
-                    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="350"  Width="780" Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <GroupBox Header="Go Trials" Grid.Column="0"
-                                  HorizontalAlignment="Left" VerticalAlignment="Top"
-                                  Margin="5,15,0,0"  FontWeight="Normal">
-                            <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="300"  Width="300" Margin="0,10,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <Label Content="Total Go Trials" Grid.Row="0"
-                                       HorizontalAlignment="Left" VerticalAlignment="top" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"                             
-                                       Height="25" Margin="5,10,0,0"  FontWeight="Normal" FontSize="11"/>
-                                <TextBox x:Name="textBox_totalGoTrialNum"  Grid.Row="0" Text="0"
-                                         IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                         Height="25" Width ="75" Margin="110,10,5,0" TextWrapping="Wrap"   FontSize="11" FontWeight="Normal" />
-
-                                <Label Content="Success Go Trials" Grid.Row="1"
-                                       HorizontalAlignment="Left" VerticalAlignment="top" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"                             
-                                       Height="25" Margin="5,10,0,0"  FontWeight="Normal" FontSize="11"/>
-                                <TextBox x:Name="textBox_successGoTrialNum"  Grid.Row="1" Text="0"
-                                         IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                         Height="25" Width ="75" Margin="110,10,5,0" TextWrapping="Wrap"   FontSize="11" FontWeight="Normal" />
-
-                                <Label Content="Miss" Grid.Row="2" 
-                                       HorizontalAlignment="Left" VerticalAlignment="top" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"                             
-                                       Height="25" Margin="5,10,0,0"  FontWeight="Normal" FontSize="11"/>
-                                <TextBox x:Name="textBox_missGoTrialNum"  Grid.Row="2" Text="0"
-                                         IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                         Height="25" Width ="75" Margin="110,10,5,0" TextWrapping="Wrap"   FontSize="11" FontWeight="Normal" />
-
-
-                                <Label Content="No Reaction" Grid.Row="3"
-                                       HorizontalAlignment="Left" VerticalAlignment="top" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"                             
-                                       Height="25" Margin="5,10,0,0"  FontWeight="Normal" FontSize="11"/>
-                                <TextBox x:Name="textBox_noreactionGoTrialNum"  Grid.Row="3" Text="0"
-                                         IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                         Height="25" Width ="75" Margin="110,10,5,0" TextWrapping="Wrap"   FontSize="11" FontWeight="Normal" />
-
-                                <Label Content="No Reach" Grid.Row="4"
-                                       HorizontalAlignment="Left" VerticalAlignment="top" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"                             
-                                       Height="25" Margin="5,10,0,0"  FontWeight="Normal" FontSize="11"/>
-                                <TextBox x:Name="textBox_noreachGoTrialNum"  Grid.Row="4" Text="0"
-                                         IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                         Height="25" Width ="75" Margin="110,10,5,0" TextWrapping="Wrap"   FontSize="11" FontWeight="Normal"/>
-                            </Grid>
-                        </GroupBox>
-
-                        <GroupBox Header="noGo Trials" Grid.Column="1"
-                                  HorizontalAlignment="Left" VerticalAlignment="Top"
-                                  Margin="5,15,0,0"  FontWeight="Normal">
-                            <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="300"  Width="300" Margin="0,10,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <Label Content="Total noGo Trials" Grid.Row="0"
-                                       HorizontalAlignment="Left" VerticalAlignment="top" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"                             
-                                       Height="25" Margin="5,10,0,0"  FontWeight="Normal" FontSize="11"/>
-                                <TextBox x:Name="textBox_totalNogoTrialNum"  Grid.Row="0" Text="0"
-                                         IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                         Height="25" Width ="75" Margin="120,10,5,0" TextWrapping="Wrap"   FontSize="11" FontWeight="Normal" />
-
-                                <Label Content="Success noGo Trials" Grid.Row="1"
-                                       HorizontalAlignment="Left" VerticalAlignment="top" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"                             
-                                       Height="25" Margin="5,10,0,0"  FontWeight="Normal" FontSize="11"/>
-                                <TextBox x:Name="textBox_successNogoTrialNum"  Grid.Row="1" Text="0"
-                                         IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                         Height="25" Width ="75" Margin="120,10,5,0" TextWrapping="Wrap"   FontSize="11" FontWeight="Normal" />
-                            </Grid>
-                        </GroupBox>
-                    </Grid>
-                </GroupBox>
-            </Grid>
-
-
-            <!--Function Buttons-->
-            <Grid Grid.Row="3">
+            <!--Function Buttons: Resume, Pause, Start and Stop-->
+            <Grid Grid.Row="2">
                 <Button x:Name="btn_start" 
                         Content="Start" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                         Margin="0,0,200,15"  Width="100" Height="35" IsEnabled="False"

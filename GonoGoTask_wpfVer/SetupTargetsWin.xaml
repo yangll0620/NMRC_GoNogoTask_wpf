@@ -5,68 +5,106 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GonoGoTask_wpfVer"
         mc:Ignorable="d"
-        Title="Target Settings" Height="300" Width="200"
-        Closing="Window_Closing">
-    <Grid>
+        Title="Target Settings" Height="400" Width="300"
+        Closing="Window_Closing" Loaded="Window_Loaded">
+    <Grid x:Name="Grid_setupTarget">
         <Grid.RowDefinitions>
-            <RowDefinition Height="4*"/>
+            <RowDefinition Height="5*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!--Target Inputs-->
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="7*"/>
             </Grid.RowDefinitions>
 
-            <!--Diameter and Distance of Target -->
+            <!--target Diameter CM -->
             <TextBlock  TextWrapping="WrapWithOverflow"  Grid.Row="0" 
-                                   HorizontalAlignment="Right" VerticalAlignment="top" 
-                                    Margin="0,10,90,0"  FontWeight="Normal" FontSize="11"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                    Margin="20,0,0,0"  FontWeight="Normal" FontSize="11"
                                     TextAlignment="Center" Padding="5,1,0,0">
-                            Diameter of Target (inch)</TextBlock>
-            <TextBox x:Name="textBox_targetDiameter" Grid.Row="0" 
-                                     HorizontalAlignment="Right" VerticalAlignment="Top" 
-                                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                     Height="25" Width ="60" Margin="0,10,15,0" 
-                                     TextWrapping="Wrap"   FontWeight="Normal"/>
-
-            <TextBlock  TextWrapping="WrapWithOverflow"  Grid.Row="1"  
-                                   HorizontalAlignment="Right" VerticalAlignment="top" 
-                                    Margin="0,10,90,0"  FontWeight="Normal" FontSize="11" >Distance from Center (inch)</TextBlock>
-            <TextBox x:Name="textBox_targetDisfromCenter"  Grid.Row="1"  
-                                     HorizontalAlignment="Right" VerticalAlignment="Top" 
-                                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                     Height="25" Width ="60" Margin="0,10,15,0" 
-                                     TextWrapping="Wrap"   FontWeight="Normal" FontSize="11" />
+                            Target Diameter (Inch)</TextBlock>
+            <TextBox x:Name="textBox_targetDiaInch" Grid.Row="0" 
+                     HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                     Height="25" Width ="60" Margin="175,0,0,0" TextWrapping="Wrap"   FontWeight="Normal" />
 
 
-            <!--Error Margin Percentage -->
-            <TextBlock  TextWrapping="WrapWithOverflow"  Grid.Row="2"  
-                                   HorizontalAlignment="Right" VerticalAlignment="top" 
-                                    Margin="0,10,90,0"  FontWeight="Normal" FontSize="11" >Error Margin Percentage (%)</TextBlock>
+            <!--No.of Target Positions -->
+            <TextBlock  TextWrapping="WrapWithOverflow"  Grid.Row="1" 
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                    Margin="20,0,0,0"  FontWeight="Normal" FontSize="11"
+                                    TextAlignment="Center" Padding="5,1,0,0">
+                            Number of Target Positions</TextBlock>
+            <TextBox x:Name="textBox_targetNoOfPositions" Grid.Row="1" 
+                     HorizontalAlignment="Left" VerticalAlignment="Center" 
+                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                     Height="25" Width ="60" Margin="175,0,0,0" TextWrapping="Wrap"   FontWeight="Normal" />
 
-            <TextBox x:Name="textBox_closeMargin"  Grid.Row="2" 
-                    HorizontalAlignment="Right" VerticalAlignment="Top" 
-                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                    Height="25" Width ="60" Margin="0,10,15,0" 
-                    TextWrapping="Wrap"   FontWeight="Normal" />
+            <!--Generate, show and check sizes/positions -->
+            <Grid x:Name="grid_GenShowCheckSizesPos" Grid.Row="2" Width="280">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Button x:Name="btn_GenSizePos" Grid.Row="0" Content="Generate Default Positions" 
+                        HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="40,0,29,0"  
+                        Width ="200" Height="25" FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" 
+                        Click="Btn_GenDefaultOptPos_Click"  />
+
+                <Grid Grid.Row="1" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="4*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock  TextWrapping="WrapWithOverflow"  Grid.Row="0" Grid.Column="1"
+                                   HorizontalAlignment="Center" VerticalAlignment="Bottom" 
+                                    Margin="0,0,0,0"  FontWeight="Normal" FontSize="11"
+                                    TextAlignment="Center" Padding="5,1,0,15">
+                            Coordinates of Each Target, ((0,0) at Screen Center)</TextBlock>
+                    <TextBlock  TextWrapping="WrapWithOverflow"  Grid.Row="0" Grid.Column="1"
+                                   HorizontalAlignment="Center" VerticalAlignment="Bottom" 
+                                    Margin="0,0,0,0"  FontWeight="Normal" FontSize="10"
+                                    TextAlignment="Center" Padding="5,1,0,0">
+                            (F2 into Modify Mode, then Enter to Save)</TextBlock>
+
+                    <ListBox x:Name="listBox_Positions" Grid.Row="1" Grid.Column="1" Width="200"
+                             SelectionMode="Single"
+                             KeyDown="ListBox_Positions_KeyDown"
+                             MouseDoubleClick="ListBox_Positions_MouseDoubleClick"/>
+
+                </Grid>
+
+                <Button x:Name="btn_CheckPositions" Grid.Row="2" Content="Check Targets" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40,8,29,8"  
+                        Width ="200" Height="25" FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" 
+                        Click="Btn_CheckPositions_Click"  />
+
+                <Button x:Name="btn_ClosePositions" Grid.Row="3" Content="Close Shown Targets" IsEnabled="False"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40,8,29,8"  
+                        Width ="200" Height="25" FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" 
+                        Click="Btn_ClosePositions_Click"  />
+
+            </Grid>
         </Grid>
 
 
         <Grid Grid.Row="1">
             <Button x:Name="btn_OK"
-            Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" 
-                Margin="0,10,120,0"  Width="60" Height="25" 
+            Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Margin="0,0,100,10"  Width="60" Height="25" 
                 FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" Click="Btn_OK_Click"  />
 
             <Button x:Name="btn_Cancel"
-            Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" 
-                Margin="0,10,10,0"  Width="60" Height="25" 
+            Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Margin="0,0,10,10"  Width="60" Height="25" 
                 FontWeight="Bold" FontFamily="Microsoft Sans Serif" FontSize="12" Click="Btn_Cancel_Click" />
         </Grid>
-
-       
     </Grid>
 </Window>

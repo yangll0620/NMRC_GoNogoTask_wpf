@@ -22,7 +22,7 @@ namespace GonoGoTask_wpfVer
     {
         public string serialPortIO8_name;
 
-        private string saved_folder;
+        public string savedFolder;
         public string file_saved;
         public string audioFile_Correct, audioFile_Error;
 
@@ -33,22 +33,26 @@ namespace GonoGoTask_wpfVer
 
         // Strings stoing the Colors
         public string goFillColorStr, nogoFillColorStr, cueCrossingColorStr;
-        public string BKWaitTrialColorStr, BKTrialColorStr, BKCueShownColorStr, BKTargetShownColorStr;
+        public string BKWaitTrialColorStr, BKTrialColorStr;
         public string CorrFillColorStr, CorrOutlineColorStr, ErrorFillColorStr, ErrorOutlineColorStr;
 
 
         // Time Related Variables
         public float[] tRange_ReadyTimeS, tRange_CueTimeS, tRange_NogoShowTimeS;
         public float tMax_ReactionTimeS, tMax_ReachTimeS, t_VisfeedbackShowS, t_InterTrialS;
-        public float t_JuicerCorrectGivenS, t_JuicerCloseGivenS;
+        public float t_JuicerCorrectGivenS;
 
         // Target Related Variables
-        public float targetDiaInch, targetDisFromCenterInch;
-        public int closeMarginPercentage;
+        public float targetDiaInch;
+        public int targetNoOfPositions;
+        public int targetDiaPixal;
+        public List<int[]> optPostions_OCenter_List;
 
 
         // Touch Screen Rectangle
         sd.Rectangle Rect_touchScreen;
+        private string taskName;
+        
 
         public MainWindow()
         {
@@ -58,14 +62,43 @@ namespace GonoGoTask_wpfVer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            taskName = "GoNogo";
+
+
             // Get the first not Primary Screen 
             swf.Screen showMainScreen = Utility.Detect_oneNonPrimaryScreen();
             // Show the  MainWindow on the Touch Screen
-            sd.Rectangle Rect_showMainScreen = showMainScreen.WorkingArea;
+            sd.Rectangle Rect_showMainScreen = showMainScreen.Bounds;
             this.Top = Rect_showMainScreen.Top;
             this.Left = Rect_showMainScreen.Left;
 
 
+            // Check serial Port IO8 Connection
+            CheckIO8Connection();
+
+
+            // Load Default Config File
+            LoadConfigFile("defaultConfig");
+
+            if (textBox_NHPName.Text != "" && serialPortIO8_name != null)
+            {
+                btn_start.IsEnabled = true;
+                btn_stop.IsEnabled = false;
+            }
+            else
+            {
+                btn_start.IsEnabled = false;
+                btn_stop.IsEnabled = false;
+            }
+
+
+            // Get the touch Screen Rectangle
+            swf.Screen PrimaryScreen = swf.Screen.PrimaryScreen;
+            Rect_touchScreen = PrimaryScreen.Bounds;
+        }
+
+        private void CheckIO8Connection()
+        {
             // locate serial Port Name
             serialPortIO8_name = SerialPortIO8.Locate_serialPortIO8();
             if (String.Equals(serialPortIO8_name, ""))
@@ -86,27 +119,13 @@ namespace GonoGoTask_wpfVer
             {
                 btn_comReconnect.Visibility = Visibility.Hidden;
                 btn_comReconnect.IsEnabled = false;
-                textblock_comState.Visibility = Visibility.Hidden;
+                run_comState.Text = "Found the COM Port for DLP-IO8!";
+                run_comState.Background = new SolidColorBrush(Colors.White);
+                run_comState.Foreground = new SolidColorBrush(Colors.Green);
+                run_instruction.Text = "Can start trials now";
+                run_instruction.Background = new SolidColorBrush(Colors.White);
+                run_instruction.Foreground = new SolidColorBrush(Colors.Green);
             }
-
-            // Load Default Config File
-            LoadConfigFile("defaultConfig");
-
-            if (textBox_NHPName.Text != "" && serialPortIO8_name != null)
-            {
-                btn_start.IsEnabled = true;
-                btn_stop.IsEnabled = false;
-            }
-            else
-            {
-                btn_start.IsEnabled = false;
-                btn_stop.IsEnabled = false;
-            }
-
-
-            // Get the touch Screen Rectangle
-            swf.Screen PrimaryScreen = swf.Screen.PrimaryScreen;
-            Rect_touchScreen = PrimaryScreen.WorkingArea;
         }
 
         private void Btn_comReconnect_Click(object sender, RoutedEventArgs e)
@@ -148,20 +167,6 @@ namespace GonoGoTask_wpfVer
             }
         }
 
-        private void Btn_Select_AudioFile_Correct_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Btn_Select_AudioFile_Error_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Btn_SelectSavefolder_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
 
         private void btnResume_Click(object sender, RoutedEventArgs e)
         {
@@ -173,22 +178,6 @@ namespace GonoGoTask_wpfVer
 
         }
 
-        private void btnTestTouchpadJuicer_Click(object sender, RoutedEventArgs e)
-        {
-            TestStartpadJuicerWin Win_TestStartpadJuicer = new TestStartpadJuicerWin(this);
-
-            // Set Owner
-            Win_TestStartpadJuicer.Owner = this;
-
-            // Get the first not Primary Screen 
-            swf.Screen showMainScreen = Utility.Detect_oneNonPrimaryScreen();
-            // Show the  MainWindow on the Touch Screen
-            sd.Rectangle Rect_showMainScreen = showMainScreen.WorkingArea;
-            Win_TestStartpadJuicer.Top = Rect_showMainScreen.Top;
-            Win_TestStartpadJuicer.Left = Rect_showMainScreen.Left;
-
-            Win_TestStartpadJuicer.Show();
-        }
 
         private void MenuItem_SetupSaveFolderAudio(object sender, RoutedEventArgs e)
         {
@@ -230,52 +219,76 @@ namespace GonoGoTask_wpfVer
             DateTime time_now = DateTime.Now;
 
             // if saved_folder not exist, created!
-            if (Directory.Exists(saved_folder) == false)
+            if (Directory.Exists(savedFolder) == false)
             {
-                System.IO.Directory.CreateDirectory(saved_folder);
+                System.IO.Directory.CreateDirectory(savedFolder);
             }
 
             string filename_saved = textBox_NHPName.Text + time_now.ToString("-yyyyMMdd-HHmmss") + ".txt";
-            file_saved = System.IO.Path.Combine(saved_folder, filename_saved);
+            file_saved = System.IO.Path.Combine(savedFolder, filename_saved);
 
             using (StreamWriter file = new StreamWriter(file_saved))
             {
                 file.WriteLine("Date: " + time_now.ToString("MM/dd/yyyy hh:mm:ss tt"));
                 file.WriteLine("NHP Name: " + textBox_NHPName.Text);
+                file.WriteLine("Task: " + taskName);
                 file.WriteLine("\n");
 
 
-                file.WriteLine("Input Parameters:");
-
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Close Margin (%)", closeMarginPercentage.ToString()));
-
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Total Number of Go Trials", textBox_goTrialNum.Text));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Total Number of Nogo Trials", textBox_nogoTrialNum.Text));
-
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Go Target Color", goFillColorStr));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Nogo Target Color", nogoFillColorStr));
-
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Target Diameter (inch)", targetDiaInch.ToString()));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Target Distance from the Center (inch)", targetDisFromCenterInch.ToString()));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Screen Resolution(Pixal)", Rect_touchScreen.Width.ToString() + " x " + Rect_touchScreen.Height.ToString()));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "CM to Pixal Ratio", Utility.ratioCM2Pixal.ToString()));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Inch to Pixal Ratio", Utility.ratioIn2Pixal.ToString()));
+                file.WriteLine("\n");
+                file.WriteLine("\n");
 
 
+                file.WriteLine("Presentation Settings:");
+                file.WriteLine("\n");
+
+                // Trial Number Settings
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Total Trial Number Per Position Per Session", textBox_totalTrialNumPerPosSess.Text));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "noGo Trial Number Per Position Per Session", textBox_nogoTrialNumPerPosSess.Text));
+                file.WriteLine("\n");
+
+
+                // Save Target Settings
+                file.WriteLine("\nTarget Position Settings:");
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Target Diameter (Inch)", targetDiaInch.ToString()));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Number of Target Positions", targetNoOfPositions.ToString()));
+                file.WriteLine("Center Coordinates of Each Target (Pixal, (0,0) in Screen Center, Right and Down Direction is Positive):");
+                for (int i = 0; i < optPostions_OCenter_List.Count; i++)
+                {
+                    int[] position = optPostions_OCenter_List[i];
+                    file.WriteLine(String.Format("{0, -40}:{1}, {2}", "Postion " + i.ToString(), position[0], position[1]));
+                }
+                file.WriteLine("\n");
+
+
+                // Save Color Settings
+                file.WriteLine("\nColor Settings:");
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Wait Trial Start Background", BKWaitTrialColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Trial Background", BKTrialColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Crossing Cue Color", cueCrossingColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Go Target Fill Color", goFillColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Nogo Target Fill Color", nogoFillColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Fill Color for Correct Feedback", CorrFillColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Outline Color for Correct Feedback", CorrOutlineColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Fill Color for Error Feedback", ErrorFillColorStr));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Outline Color for Error Feedback", ErrorOutlineColorStr));
+                file.WriteLine("\n");
+
+
+                // Save Time Settings
+                file.WriteLine("\nTime Settings:");
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Max Reaction Time (s)", tMax_ReactionTimeS.ToString()));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Max Reach Time (s)", tMax_ReachTimeS.ToString()));
                 file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Ready Interface Show Time Range (s)", tRange_ReadyTimeS[0].ToString(), tRange_ReadyTimeS[1].ToString()));
                 file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Cue Interface Show Time Range (s)", tRange_CueTimeS[0].ToString(), tRange_CueTimeS[1].ToString()));
                 file.WriteLine(String.Format("{0, -40}:  [{1} {2}]", "Nogo Interface Show Range Time (s)", tRange_NogoShowTimeS[0].ToString(), tRange_NogoShowTimeS[1].ToString()));
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Inter-Trial Time (s)", t_InterTrialS.ToString()));
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Visual Feedback Time (s)", t_VisfeedbackShowS.ToString())); 
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Juicer Feedback Time (s)", t_JuicerCloseGivenS.ToString()));
-
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Max Reach Time (s)", tMax_ReachTimeS.ToString()));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Max Reaction Time (s)", tMax_ReactionTimeS.ToString()));
-
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Correct Given Juicer Time (s)", t_JuicerCorrectGivenS.ToString()));
                 file.WriteLine("\n");
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of X Y Position", "Pixal"));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of TimePoint/Time", "s"));
-
-
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Screen Resolution(pixal)", Rect_touchScreen.Width.ToString() + "x" + Rect_touchScreen.Height.ToString()));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Inch to Pixal Ratio", Utility.ratioIn2Pixal.ToString()));
 
             }
         }
@@ -300,7 +313,7 @@ namespace GonoGoTask_wpfVer
             // Get the first not Primary Screen 
             swf.Screen showMainScreen = Utility.Detect_oneNonPrimaryScreen();
             // Show the  MainWindow on the Touch Screen
-            sd.Rectangle Rect_showMainScreen = showMainScreen.WorkingArea;
+            sd.Rectangle Rect_showMainScreen = showMainScreen.Bounds;
             Win_SetupTime.Top = Rect_showMainScreen.Top;
             Win_SetupTime.Left = Rect_showMainScreen.Left;
 
@@ -318,7 +331,7 @@ namespace GonoGoTask_wpfVer
             // Get the first not Primary Screen 
             swf.Screen showMainScreen = Utility.Detect_oneNonPrimaryScreen();
             // Show the  MainWindow on the Touch Screen
-            sd.Rectangle Rect_showMainScreen = showMainScreen.WorkingArea;
+            sd.Rectangle Rect_showMainScreen = showMainScreen.Bounds;
             Win_SetupColors.Top = Rect_showMainScreen.Top;
             Win_SetupColors.Left = Rect_showMainScreen.Left;
 
@@ -338,7 +351,7 @@ namespace GonoGoTask_wpfVer
             // Get the first not Primary Screen 
             swf.Screen showMainScreen = Utility.Detect_oneNonPrimaryScreen();
             // Show the  MainWindow on the Touch Screen
-            sd.Rectangle Rect_showMainScreen = showMainScreen.WorkingArea;
+            sd.Rectangle Rect_showMainScreen = showMainScreen.Bounds;
             Win_SetupTarget.Top = Rect_showMainScreen.Top;
             Win_SetupTarget.Left = Rect_showMainScreen.Left;
 
@@ -348,56 +361,6 @@ namespace GonoGoTask_wpfVer
             Win_SetupTarget.Show();
         }
 
-        private void btnShowAllTargets_Click(object sender, RoutedEventArgs e)
-        {
-
-            // Get the touch Screen, Should Set Touch Screen as the PrimaryScreen
-            swf.Screen primaryScreen = swf.Screen.PrimaryScreen;
-
-            //Show the Win_allTargets on the Touch Screen
-            Window Win_allTargets = new Window();
-            sd.Rectangle Rect_primaryScreen = primaryScreen.WorkingArea;
-            Win_allTargets.Top = Rect_primaryScreen.Top;
-            Win_allTargets.Left = Rect_primaryScreen.Left;
-
-            Color selectedColor = (Color)(typeof(Colors).GetProperty(BKTrialColorStr) as PropertyInfo).GetValue(null, null);
-            Win_allTargets.Background = new SolidColorBrush(selectedColor);
-            Win_allTargets.Show();
-            Win_allTargets.WindowState = WindowState.Maximized;
-            Win_allTargets.Name = "childWin_ShowAllTargets";
-
-            // Add a Grid
-            Grid wholeGrid = new Grid();
-            wholeGrid.Height = Win_allTargets.ActualHeight;
-            wholeGrid.Width = Win_allTargets.ActualWidth;
-            Win_allTargets.Content = wholeGrid;
-            wholeGrid.UpdateLayout();
-
-
-            int Diameter = Utility.in2pixal(targetDiaInch);
-            List<int[]> optPostions_List = new List<int[]>();
-
-            int screenCenter_X = (int)wholeGrid.ActualWidth / 2;
-            int screenCenter_Y = (int)wholeGrid.ActualHeight / 2;
-            int disFromCenter = Utility.in2pixal(targetDisFromCenterInch);
-            int disXFromCenter = disFromCenter;
-            int disYFromCenter = disFromCenter;
-
-            optPostions_List.Add(new int[] { screenCenter_X - disXFromCenter, screenCenter_Y }); // left position
-            optPostions_List.Add(new int[] { screenCenter_X, screenCenter_Y - disYFromCenter }); // top position
-            optPostions_List.Add(new int[] { screenCenter_X + disXFromCenter, screenCenter_Y }); // right position
-
-            Color goCircleColor = (Color)(typeof(Colors).GetProperty(goFillColorStr) as PropertyInfo).GetValue(null, null); ;
-            foreach (int[] centerPoint_Pos in optPostions_List)
-            {
-                Ellipse circleGo = Create_GoCircle((double)Diameter, centerPoint_Pos);
-                circleGo.Fill = new SolidColorBrush(goCircleColor);
-                wholeGrid.Children.Add(circleGo);
-            }
-            wholeGrid.UpdateLayout();
-
-            Win_allTargets.Owner = this;
-        }
 
         private Ellipse Create_GoCircle(double Diameter, int[] centerPoint_Pos)
         {/*
@@ -454,19 +417,20 @@ namespace GonoGoTask_wpfVer
                       
             dynamic config = JsonConvert.DeserializeObject(jsonStr);
             
-            /* ---- Config into the Interface ---- */
+            //Config into the Main Interface 
             textBox_NHPName.Text = (string)config["NHP Name"];
             textBox_totalTrialNumPerPosSess.Text = (string)config["Total Trial Num Per Position Per Session"];
             textBox_nogoTrialNumPerPosSess.Text = (string)config["noGo Trial Num Per Position Per Session"];
-            textBox_goTrialNum.Text = (string)config["Go Trials Num"];
-            textBox_nogoTrialNum.Text = (string)config["noGo Trials Num"];
 
-            textBox_audioFile_Correct.Text = (string)config["audioFile_Correct"];
-            textBox_audioFile_Error.Text = (string)config["audioFile_Error"];
-            textBox_savedFolder.Text = (string)config["saved folder"]; 
-            if (String.Compare(textBox_savedFolder.Text, "default", true) == 0)
+
+
+            // SaveFolder and Audio Section
+            savedFolder = (string)config["saved folder"];
+            audioFile_Correct = (string)config["audioFile_Correct"];
+            audioFile_Error = (string)config["audioFile_Error"]; 
+            if (String.Compare(savedFolder, "default", true) == 0)
             {
-                textBox_savedFolder.Text = System.IO.Path.GetFullPath(@"..\\..\\GoNogoTaskSave"); ;
+                savedFolder = System.IO.Path.GetFullPath(@"..\\..\\GoNogoTaskSave"); ;
             }
 
 
@@ -481,7 +445,6 @@ namespace GonoGoTask_wpfVer
             t_InterTrialS = float.Parse((string)configTime["Inter Trials Time"]);
             t_VisfeedbackShowS = float.Parse((string)configTime["Visual Feedback Show Time"]);
             t_JuicerCorrectGivenS = float.Parse((string)configTime["Juice Correct Given Time"]);
-            t_JuicerCloseGivenS = float.Parse((string)configTime["Juice Close Given Time"]);
 
 
             // Color Sections
@@ -498,10 +461,17 @@ namespace GonoGoTask_wpfVer
 
 
             // Target Sections
-            var configTarget = config["Target"];      
-            targetDiaInch = float.Parse((string)configTarget["Target Diameter (inch)"]);
-            targetDisFromCenterInch = float.Parse((string)configTarget["Target Distance from Center"]);
-            closeMarginPercentage = int.Parse((string)configTarget["Close Margin Percentage"]);
+            var configTarget = config["Target"];
+            targetDiaInch = float.Parse((string)configTarget["Target Diameter (Inch)"]);
+            targetNoOfPositions = configTarget["Target No of Positions"];
+            optPostions_OCenter_List = new List<int[]>();
+            dynamic tmp = configTarget["Optional Positions"];
+            foreach (var xyPos in tmp)
+            {
+                int a = int.Parse((string)xyPos[0]);
+                int b = int.Parse((string)xyPos[1]);
+                optPostions_OCenter_List.Add(new int[] { a, b });
+            } 
         }
 
         private void SaveConfigFile(string configFile)
@@ -519,14 +489,13 @@ namespace GonoGoTask_wpfVer
             configTimes.t_InterTrial = t_InterTrialS;
             configTimes.t_VisfeedbackShow = t_VisfeedbackShowS;
             configTimes.t_JuicerCorrectGiven = t_JuicerCorrectGivenS;
-            configTimes.t_JuicerCloseGiven = t_JuicerCloseGivenS;
 
 
             // config Target
             ConfigTarget configTarget = new ConfigTarget();
             configTarget.targetDiaInch = targetDiaInch;
-            configTarget.targetDisFromCenter = targetDisFromCenterInch;
-            configTarget.closeMarginPercentage = closeMarginPercentage;
+            configTarget.targetNoOfPositions = targetNoOfPositions;
+            configTarget.optPostions_OCenter_List = optPostions_OCenter_List;
 
 
             // config Colors
@@ -548,14 +517,12 @@ namespace GonoGoTask_wpfVer
             config.NHPName = textBox_NHPName.Text;
             config.TotalTrialNumPerPosSess = Int32.Parse(textBox_totalTrialNumPerPosSess.Text);
             config.NogoTrialNumPerPosSess = Int32.Parse(textBox_nogoTrialNumPerPosSess.Text);
-            config.GoTrialNum = Int32.Parse(textBox_goTrialNum.Text);
-            config.NogoTrialNum = Int32.Parse(textBox_nogoTrialNum.Text);
             config.configTimes = configTimes;
             config.configTarget = configTarget;
             config.configColors = configColors;
-            config.saved_folder = textBox_savedFolder.Text;
-            config.audioFile_Correct = textBox_audioFile_Correct.Text;
-            config.audioFile_Error = textBox_audioFile_Error.Text;
+            config.saved_folder = savedFolder;
+            config.audioFile_Correct = audioFile_Correct;
+            config.audioFile_Error = audioFile_Error;
 
 
             // Write to Json file
@@ -619,20 +586,6 @@ namespace GonoGoTask_wpfVer
             // btn_Start and btn_stop
             btn_start.IsEnabled = true;
             btn_stop.IsEnabled = false;
-        }
-
-        private void MenuItem_showCloseCircle(object sender, RoutedEventArgs e)
-        {
-            showCloseCircle = true;
-        }
-
-        private void MenuItem_noShowCloseCircle(object sender, RoutedEventArgs e)
-        {
-            showCloseCircle = false;
-        }
-
-        private void btnTest_Click(object sender, RoutedEventArgs e)
-        {
         }
 
 

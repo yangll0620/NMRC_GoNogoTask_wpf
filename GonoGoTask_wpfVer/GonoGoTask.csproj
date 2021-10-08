@@ -73,6 +73,9 @@
     <Compile Include="SetupColorsWin.xaml.cs">
       <DependentUpon>SetupColorsWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SetupSavefolderAudios.xaml.cs">
+      <DependentUpon>SetupSavefolderAudios.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SetupTargetsWin.xaml.cs">
       <DependentUpon>SetupTargetsWin.xaml</DependentUpon>
     </Compile>
@@ -101,6 +104,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SetupColorsWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SetupSavefolderAudios.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
