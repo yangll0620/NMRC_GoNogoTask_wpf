@@ -34,7 +34,7 @@ ToDo List
 8. Generate, modify and save optPostions_OCenter_List function
 9. Show circleGo and rectNogo the same as those in COT task
 10. Resources debug/release used Problem.
-11. Cue position Incorrect
+11. Cue position Incorrect (Done)
 12. Test Show Target and Actual Target Position during Task
 
 

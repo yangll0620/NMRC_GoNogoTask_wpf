@@ -430,7 +430,7 @@ namespace GonoGoTask_wpfVer
             audioFile_Error = (string)config["audioFile_Error"]; 
             if (String.Compare(savedFolder, "default", true) == 0)
             {
-                savedFolder = System.IO.Path.GetFullPath(@"..\\..\\GoNogoTaskSave"); ;
+                savedFolder = System.IO.Path.GetFullPath(@"C:\\GoNogoTaskSave"); ;
             }
 
 
