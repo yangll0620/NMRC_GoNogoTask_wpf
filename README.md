@@ -20,22 +20,22 @@ Issues:
 
 ToDo List
 1. Change trial end defination into late(visual feedback ends, all touch point left)
-2. Run in session, stop until the experimenter click stop button
+2. Run in session, stop until the experimenter click stop button (Done)
 	trialNumPerSession = totalTrialNum/pos/Session * totalPosNum, 
 	totalTrialNum = goTrialNum/pos/Session + noGoTrialNum/pos/Session
 3. Change event code according to COT task (Done)
 	3-1 Write to the save file of the event codes
 4. Add 0000 after each trial (Done)
-5. Implement the new main interface as Guo drawed
-	(1) Each Target Realtime Info Feedback
-	(2) Session Realtime Info Feedback
-6. Move savefolder/audiosetup into menu
+5. Implement the new main interface as Guo drawed (Done)
+	(1) Each Target Realtime Info Feedback (Done)
+	(2) Session Realtime Info Feedback(Done)
+6. Move and Implement savefolder/audiosetup into menu(Done)
 7. Add Block Inf in saved file name
-8. Generate, modify and save optPostions_OCenter_List function
-9. Show circleGo and rectNogo the same as those in COT task
+8. Generate, modify and save optPostions_OCenter_List function (Done)
+9. Show circleGo and rectNogo the same as those in COT task (Done)
 10. Resources debug/release used Problem.
 11. Cue position Incorrect (Done)
-12. Test Show Target and Actual Target Position during Task
+12. Test Show Target and Actual Target Position during Task (Done)
 
 
 Advanced Functions:

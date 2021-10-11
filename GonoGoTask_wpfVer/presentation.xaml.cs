@@ -162,8 +162,8 @@ namespace GonoGoTask_wpfVer
 
         // Wait Time Range for Each Event, and Max Reaction and Reach Time
         float[] tRange_ReadyTime, tRange_CueTime, tRange_NogoShowTime;
-        float tMax_ReactionTimeMS, tMax_ReachTimeMS; 
-        Int32 t_VisfeedbackShow, t_InterTrial; // Visual Feedback Show Time (ms)
+        float tMax_ReactionTimeMS, tMax_ReachTimeMS;
+        Int32 t_VisfeedbackShow, t_InterTrialMS; // Visual Feedback Show Time (ms)
 
         bool PresentTrial;
 
@@ -182,7 +182,7 @@ namespace GonoGoTask_wpfVer
 
         // list storing the position, touched and left Timepoints of the touch points
         // one element: [point_id, touched_timepoint, touched_x, touched_y, left_timepoint, left_x, left_y]
-        List<double[]> touchPoints_PosTime = new List<double[]>(); 
+        List<double[]> touchPoints_PosTime = new List<double[]>();
 
         // Stop Watch for recording the time interval between the first touchpoint and the last touchpoint within One Touch
         Stopwatch tpoints1TouchWatch;
@@ -212,14 +212,6 @@ namespace GonoGoTask_wpfVer
         static string cmdDigIn1 = "A";
         static string cmdHigh3 = "3";
         static string cmdLow3 = "E";
-        static string cmdHigh5 = "5";
-        static string cmdLow5 = "T";
-        static string cmdHigh6 = "6";
-        static string cmdLow6 = "Y";
-        static string cmdHigh7 = "7";
-        static string cmdLow7 = "U";
-        static string cmdHigh8 = "8";
-        static string cmdLow8 = "I";
 
         // Channel 1 Digital Input for Startpad, Channel 3 for Juicer 
         static string startpad_In = cmdDigIn1;
@@ -229,21 +221,27 @@ namespace GonoGoTask_wpfVer
         static int startpad_DigIn_Unpressed = 1;
 
 
-        static string TDTCmd_InitState = cmdLow5 + cmdLow6 + cmdLow7 + cmdLow8;
-        static string TDTCmd_TouchTriggerTrial = cmdHigh5 + cmdHigh6 + cmdHigh7 + cmdLow8;
-        static string TDTCmd_ReadyShown = cmdLow5 + cmdHigh6 + cmdHigh7 + cmdLow8;
-        static string TDTCmd_ReadyWaitTooShort = cmdLow5 + cmdLow6 + cmdHigh7 + cmdHigh8;
-        static string TDTCmd_GoTargetShown = cmdHigh5 + cmdLow6 + cmdHigh7 + cmdLow8;
-        static string TDTCmd_GoReactionTooLong = cmdHigh5 + cmdHigh6 + cmdLow7 + cmdLow8;
-        static string TDTCmd_GoReachTooLong = cmdHigh5 + cmdLow6 + cmdHigh7 + cmdHigh8;
-        static string TDTCmd_GoTouched = cmdHigh5 + cmdHigh6 + cmdLow7 + cmdHigh8;
-        static string TDTCmd_GoTouchedHit = cmdLow5 + cmdHigh6 + cmdLow7 + cmdLow8;
-        static string TDTCmd_GoTouchedMiss = cmdHigh5 + cmdLow6 + cmdLow7 + cmdLow8;
-        static string TDTCmd_CueShown = cmdLow5 + cmdLow6 + cmdLow7 + cmdHigh8;
-        static string TDTCmd_CueWaitTooShort = cmdLow5 + cmdHigh6 + cmdLow7 + cmdHigh8;
-        static string TDTCmd_noGoTargetShown = cmdLow5 + cmdLow6 + cmdHigh7 + cmdLow8;
-        static string TDTCmd_noGoEnoughTCorrectFeedback = cmdLow5 + cmdHigh6 + cmdHigh7 + cmdHigh8;
-        static string TDTCmd_noGoLeftEarlyErrorFeedback = cmdHigh5 + cmdLow6 + cmdLow7 + cmdHigh8;
+        static string Code_InitState = "0000";
+        static string Code_TouchTriggerTrial = "1110";
+        static string Code_ReadyShown = "0110";
+        static string Code_ReadyWaitTooShort = "0011";
+        static string Code_GoTargetShown = "1010";
+        static string Code_GoReactionTooLong = "1100";
+        static string Code_GoReachTooLong = "1011";
+        static string Code_GoTouched = "1101";
+        static string Code_GoTouchedHit = "0100";
+        static string Code_GoTouchedMiss = "1000";
+        static string Code_CueShown = "0001";
+        static string Code_CueWaitTooShort = "0101";
+        static string Code_noGoTargetShown = "0010";
+        static string Code_noGoEnoughTCorrectFeedback = "0111";
+        static string Code_noGoLeftEarlyErrorFeedback = "1001";
+
+
+        string TDTCmd_InitState, TDTCmd_TouchTriggerTrial, TDTCmd_ReadyShown, TDTCmd_ReadyWaitTooShort; 
+        string TDTCmd_GoTargetShown, TDTCmd_GoReactionTooLong, TDTCmd_GoReachTooLong, TDTCmd_GoTouched, TDTCmd_GoTouchedHit, TDTCmd_GoTouchedMiss;
+        string TDTCmd_CueShown, TDTCmd_CueWaitTooShort;
+        string TDTCmd_noGoTargetShown, TDTCmd_noGoEnoughTCorrectFeedback, TDTCmd_noGoLeftEarlyErrorFeedback;
 
 
         /* startpad parameters */
@@ -272,7 +270,7 @@ namespace GonoGoTask_wpfVer
         public presentation(MainWindow mainWindow)
         {
             InitializeComponent();
-            
+
             Touch.FrameReported += new TouchFrameEventHandler(Touch_FrameReported);
 
             // parent
@@ -300,9 +298,57 @@ namespace GonoGoTask_wpfVer
             // Set audio Feedback related members 
             SetAudioFeedback();
 
+            //
+            Generate_IO8EventTDTCmd();
+
             PrepBef_Present();
         }
 
+        private string Convert2_IO8EventCmd_Bit5to8(string EventCode)
+        {/*
+            Generate IO8 Event Command based on EventCode using bit 5-8
+            E.g. "0000" -> "TYUI", "1111" -> "5678", "1010" -> "5Y7I"
+            */
+
+            string cmdHigh5 = "5";
+            string cmdLow5 = "T";
+            string cmdHigh6 = "6";
+            string cmdLow6 = "Y";
+            string cmdHigh7 = "7";
+            string cmdLow7 = "U";
+            string cmdHigh8 = "8";
+            string cmdLow8 = "I";
+
+            string IO8EventCmd = cmdLow5 + cmdLow6 + cmdLow7 + cmdLow8;
+            if (EventCode[0] == '1')
+                IO8EventCmd  = IO8EventCmd.Remove(0, 1).Insert(0, cmdHigh5);
+            if (EventCode[1] == '1')
+                IO8EventCmd = IO8EventCmd.Remove(1, 1).Insert(1, cmdHigh6);
+            if (EventCode[2] == '1')
+                IO8EventCmd = IO8EventCmd.Remove(2, 1).Insert(2, cmdHigh7);
+            if (EventCode[3] == '1')
+                IO8EventCmd = IO8EventCmd.Remove(3, 1).Insert(3, cmdHigh8);
+
+            return IO8EventCmd;
+        }
+        private void Generate_IO8EventTDTCmd()
+        {
+            TDTCmd_InitState = Convert2_IO8EventCmd_Bit5to8(Code_InitState);
+            TDTCmd_TouchTriggerTrial = Convert2_IO8EventCmd_Bit5to8(Code_TouchTriggerTrial);
+            TDTCmd_ReadyShown = Convert2_IO8EventCmd_Bit5to8(Code_ReadyShown);
+            TDTCmd_ReadyWaitTooShort = Convert2_IO8EventCmd_Bit5to8(Code_ReadyWaitTooShort);
+            TDTCmd_GoTargetShown = Convert2_IO8EventCmd_Bit5to8(Code_GoTargetShown);
+            TDTCmd_GoReactionTooLong = Convert2_IO8EventCmd_Bit5to8(Code_GoReactionTooLong);
+            TDTCmd_GoReachTooLong = Convert2_IO8EventCmd_Bit5to8(Code_GoReachTooLong);
+            TDTCmd_GoTouched = Convert2_IO8EventCmd_Bit5to8(Code_GoTouched);
+            TDTCmd_GoTouchedHit = Convert2_IO8EventCmd_Bit5to8(Code_GoTouchedHit);
+            TDTCmd_GoTouchedMiss = Convert2_IO8EventCmd_Bit5to8(Code_GoTouchedMiss);
+            TDTCmd_CueShown = Convert2_IO8EventCmd_Bit5to8(Code_CueShown);
+            TDTCmd_CueWaitTooShort = Convert2_IO8EventCmd_Bit5to8(Code_CueWaitTooShort);
+            TDTCmd_noGoTargetShown = Convert2_IO8EventCmd_Bit5to8(Code_noGoTargetShown);
+            TDTCmd_noGoEnoughTCorrectFeedback = Convert2_IO8EventCmd_Bit5to8(Code_noGoEnoughTCorrectFeedback);
+            TDTCmd_noGoLeftEarlyErrorFeedback = Convert2_IO8EventCmd_Bit5to8(Code_noGoLeftEarlyErrorFeedback);
+        }
         private void PrepBef_Present()
         {
 
@@ -326,6 +372,60 @@ namespace GonoGoTask_wpfVer
 
             // Init Trial Information
             Init_FeedbackTrialsInformation();
+
+            //Write Trial Setup Information
+            Write_TrialSetupInformation();
+        }
+
+        private void Write_TrialSetupInformation()
+        {
+            using (StreamWriter file = File.AppendText(file_saved))
+            {
+                file.WriteLine("\n\n");
+
+                file.WriteLine(String.Format("{0, -40}", "Trial Information"));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of Touch Point X Y Position", "Pixal"));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Touch Point X Y Coordinate System", "(0,0) in Top Left Corner, Right and Down Direction is Positive"));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of Event TimePoint/Time", "Second"));
+                file.WriteLine("\n");
+
+                file.WriteLine(String.Format("{0, -40}", "Event Codes in TDT System:"));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_InitState), Code_InitState));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_TouchTriggerTrial), Code_TouchTriggerTrial));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_ReadyShown), Code_ReadyShown));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_ReadyWaitTooShort), Code_ReadyWaitTooShort));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_CueShown), Code_CueShown));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_CueWaitTooShort), Code_CueWaitTooShort));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_GoTargetShown), Code_GoTargetShown));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_GoReactionTooLong), Code_GoReactionTooLong));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_GoReachTooLong), Code_GoReachTooLong));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_GoTouched), Code_GoTouched));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_GoTouchedHit), Code_GoTouchedHit));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_GoTouchedMiss), Code_GoTouchedMiss));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_noGoTargetShown), Code_noGoTargetShown));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_noGoEnoughTCorrectFeedback), Code_noGoEnoughTCorrectFeedback));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_noGoLeftEarlyErrorFeedback), Code_noGoLeftEarlyErrorFeedback));
+                file.WriteLine("\n");
+
+
+                file.WriteLine(String.Format("{0, -40}", "IO8 Commands:"));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_InitState), TDTCmd_InitState));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_TouchTriggerTrial), TDTCmd_TouchTriggerTrial));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_ReadyShown), TDTCmd_ReadyShown));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_ReadyWaitTooShort), TDTCmd_ReadyWaitTooShort));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_CueShown), TDTCmd_CueShown));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_CueWaitTooShort), TDTCmd_CueWaitTooShort));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_GoTargetShown), TDTCmd_GoTargetShown));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_GoReactionTooLong), TDTCmd_GoReactionTooLong));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_GoReachTooLong), TDTCmd_GoReachTooLong));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_GoTouched), TDTCmd_GoTouched));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_GoTouchedHit), TDTCmd_GoTouchedHit));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_GoTouchedMiss), TDTCmd_GoTouchedMiss));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_noGoTargetShown), TDTCmd_noGoTargetShown));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_noGoEnoughTCorrectFeedback), TDTCmd_noGoEnoughTCorrectFeedback));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_noGoLeftEarlyErrorFeedback), TDTCmd_noGoLeftEarlyErrorFeedback));
+                file.WriteLine("\n");
+            }
         }
 
         private void Init_FeedbackTrialsInformation()
@@ -384,16 +484,6 @@ namespace GonoGoTask_wpfVer
                 using (StreamWriter file = File.AppendText(file_saved))
                 {
                     file.WriteLine("\n\n");
-
-                    if (currSessi == 1)
-                    {
-                        file.WriteLine(String.Format("{0, -40}", "Trial Information"));
-                        file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of Touch Point X Y Position", "Pixal"));
-                        file.WriteLine(String.Format("{0, -40}:  {1}", "Touch Point X Y Coordinate System", "(0,0) in Top Left Corner, Right and Down Direction is Positive"));
-                        file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of Event TimePoint/Time", "Second"));
-                        file.WriteLine("\n");
-                    }
-
                     file.WriteLine(String.Format("{0, -40}: {1}", "Session", currSessi.ToString()));
                 }
 
@@ -850,7 +940,7 @@ namespace GonoGoTask_wpfVer
             tRange_NogoShowTime = parent.tRange_NogoShowTimeS;
             tMax_ReactionTimeMS = parent.tMax_ReactionTimeS * 1000;
             tMax_ReachTimeMS = parent.tMax_ReachTimeS * 1000;
-            t_InterTrial = (Int32)(parent.t_InterTrialS * 1000);
+            t_InterTrialMS = (Int32)(parent.t_InterTrialS * 1000);
             t_VisfeedbackShow = (Int32)(parent.t_VisfeedbackShowS * 1000);
             
 
