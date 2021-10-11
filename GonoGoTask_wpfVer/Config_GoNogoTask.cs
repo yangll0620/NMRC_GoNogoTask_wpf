@@ -9,7 +9,7 @@ namespace GonoGoTask_wpfVer
         public string NHPName;
 
         [JsonProperty(PropertyName = "Total Trial Num Per Position Per Session")]
-        public int TotalTrialNumPerPosSess { get; set; }
+        public int TotalTrialNumPerPosSess;
 
         [JsonProperty(PropertyName = "noGo Trial Num Per Position Per Session")]
         public int NogoTrialNumPerPosSess;
