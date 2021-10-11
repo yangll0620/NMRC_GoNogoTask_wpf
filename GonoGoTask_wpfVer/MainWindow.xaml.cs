@@ -178,12 +178,6 @@ namespace GonoGoTask_wpfVer
 
         }
 
-
-        private void MenuItem_SetupSaveFolderAudio(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void TextBox_nogoTrialNumPerPosSession_TextChanged(object sender, TextChangedEventArgs e)
         {
 
@@ -362,29 +356,23 @@ namespace GonoGoTask_wpfVer
         }
 
 
-        private Ellipse Create_GoCircle(double Diameter, int[] centerPoint_Pos)
-        {/*
-            Create the go circle
+        private void MenuItem_SetupSaveFolderAudio(object sender, RoutedEventArgs e)
+        {
+            SetupSavefolderAudios Win_SetupSavefolderAudios = new SetupSavefolderAudios(this);
 
-            */
 
-            // Create an Ellipse  
-            Ellipse circleGo = new System.Windows.Shapes.Ellipse();
+            // Get the first not Primary Screen 
+            swf.Screen showMainScreen = Utility.Detect_oneNonPrimaryScreen();
+            // Show the  MainWindow on the Touch Screen
+            sd.Rectangle Rect_showMainScreen = showMainScreen.Bounds;
+            Win_SetupSavefolderAudios.Top = Rect_showMainScreen.Top;
+            Win_SetupSavefolderAudios.Left = Rect_showMainScreen.Left;
 
-            // set the size, position of circleGo
-            circleGo.Height = Diameter;
-            circleGo.Width = Diameter;
-            circleGo.VerticalAlignment = VerticalAlignment.Top;
-            circleGo.HorizontalAlignment = HorizontalAlignment.Left;
-            circleGo.Fill = new SolidColorBrush(Colors.Blue);
+            // Set Owner
+            Win_SetupSavefolderAudios.Owner = this;
 
-            double left = centerPoint_Pos[0] - circleGo.Width / 2;
-            double top = centerPoint_Pos[1] - circleGo.Height / 2;
-            circleGo.Margin = new Thickness(left, top, 0, 0);
-
-            return circleGo;
+            Win_SetupSavefolderAudios.Show();
         }
-
 
         private void LoadConfigFile(string configFile)
         {/*Load Config File .json 
