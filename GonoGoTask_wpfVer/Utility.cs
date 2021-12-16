@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using swf = System.Windows.Forms;
+using System.Windows.Forms;
 using sd = System.Drawing;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -20,12 +17,12 @@ namespace GonoGoTask_wpfVer
         { }
 
 
-        public static swf.Screen Detect_oneNonPrimaryScreen()
+        public static Screen Detect_oneNonPrimaryScreen()
         {/* Detect the first not Primary Screen */
 
-            swf.Screen[] screens = swf.Screen.AllScreens;
-            swf.Screen nonPrimaryS = swf.Screen.PrimaryScreen; 
-            foreach (swf.Screen s in screens)
+            Screen[] screens = Screen.AllScreens;
+            Screen nonPrimaryS = Screen.PrimaryScreen; 
+            foreach (Screen s in screens)
             {
                 if(s.Primary == false)
                 {
@@ -39,10 +36,23 @@ namespace GonoGoTask_wpfVer
 
         public static sd.Rectangle Detect_PrimaryScreen_Rect()
         {
-            swf.Screen PrimaryS = swf.Screen.PrimaryScreen;
+            Screen PrimaryS = Screen.PrimaryScreen;
             sd.Rectangle screenRect = PrimaryS.Bounds;
 
             return screenRect;
+        }
+
+        public static Screen TaskUIScreen()
+        {/* Return the  Screen for Showing the Task UI*/
+            Screen taskUIScreen = Detect_oneNonPrimaryScreen();
+
+            return taskUIScreen;
+        }
+        public static Screen TaskPresentTouchScreen()
+        {/* Return the Touch Screen for Showing the Task Presentation*/
+            Screen taskPresentTouchScreen = Screen.PrimaryScreen;
+
+            return taskPresentTouchScreen;
         }
 
         public static Ellipse Create_Circle(double Diameter, SolidColorBrush brush_Fill)
@@ -79,7 +89,7 @@ namespace GonoGoTask_wpfVer
 
 
             circle.VerticalAlignment = VerticalAlignment.Top;
-            circle.HorizontalAlignment = HorizontalAlignment.Left;
+            circle.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
 
             circle.Margin = new Thickness(cPoint_Pos_OTopLeft[0] - circle.Width / 2, cPoint_Pos_OTopLeft[1] - circle.Height / 2, 0, 0);
 
@@ -99,8 +109,8 @@ namespace GonoGoTask_wpfVer
             */
 
 
-            rect.VerticalAlignment = VerticalAlignment.Top;
-            rect.HorizontalAlignment = HorizontalAlignment.Left;
+            rect.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+            rect.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
 
             rect.Margin = new Thickness(cPoint_Pos_OTopLeft[0] - rect.Width / 2, cPoint_Pos_OTopLeft[1] - rect.Height / 2, 0, 0);
 

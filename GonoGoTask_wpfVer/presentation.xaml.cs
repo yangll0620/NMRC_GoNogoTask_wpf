@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +11,7 @@ using System.IO.Ports;
 using System.IO;
 using System.Reflection;
 using sd = System.Drawing;
+using swf =System.Windows.Forms;
 
 namespace GonoGoTask_wpfVer
 {
@@ -127,9 +127,7 @@ namespace GonoGoTask_wpfVer
         Line vertLine, horiLine;
         Ellipse point1, point2;
 
-        // Center Point and Radius of CircleGo (in Pixal)
-        Point circleGo_centerPoint_Pixal;
-        double circleGo_Radius_Pixal;
+        double currCircleGo_Radius_Pixal;
 
         // ColorBrushes 
         private SolidColorBrush brush_goCircleFill, brush_nogoRectFill;
@@ -151,7 +149,7 @@ namespace GonoGoTask_wpfVer
         string name_point1 = "wpoint1", name_point2 = "wpoint2";
 
 
-        private List<int[]> optPostions_OCenter_List;
+        private List<int[]> optPostions_OTopLeft_List;
 
         // Target Information (posIndex, goNogoType) List for Each Trial Per Session
         private List<int[]> trialTargetInfo_PerSess_List;
@@ -181,8 +179,8 @@ namespace GonoGoTask_wpfVer
         List<double[]> downPoints_Pos = new List<double[]>();
 
         // list storing the position, touched and left Timepoints of the touch points
-        // one element: [point_id, touched_timepoint, touched_x, touched_y, left_timepoint, left_x, left_y]
-        List<double[]> touchPoints_PosTime = new List<double[]>();
+        // one element: [point_id, touched_timepoint, touched_x, touched_y, left_timepoint, left_x, left_y, disFromTarget]
+        List<double[]> touchPoints_PosTimeDis = new List<double[]>();
 
         // Stop Watch for recording the time interval between the first touchpoint and the last touchpoint within One Touch
         Stopwatch tpoints1TouchWatch;
@@ -360,7 +358,7 @@ namespace GonoGoTask_wpfVer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error Message", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(ex.Message, "Error Message", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             // Thread for Read and Write IO8
             thread_ReadWrite_IO8 = new Thread(new ThreadStart(Thread_ReadWrite_IO8));
@@ -374,10 +372,10 @@ namespace GonoGoTask_wpfVer
             Init_FeedbackTrialsInformation();
 
             //Write Trial Setup Information
-            Write_TrialSetupInformation();
+            Save_TrialSetupInformation();
         }
 
-        private void Write_TrialSetupInformation()
+        private void Save_TrialSetupInformation()
         {
             using (StreamWriter file = File.AppendText(file_saved))
             {
@@ -387,6 +385,12 @@ namespace GonoGoTask_wpfVer
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of Touch Point X Y Position", "Pixal"));
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Touch Point X Y Coordinate System", "(0,0) in Top Left Corner, Right and Down Direction is Positive"));
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of Event TimePoint/Time", "Second"));
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Center Coordinates of Each Target", "((0,0) in Top Left Corner, Right and Down Direction is Positive)"));
+                for (int i = 0; i < optPostions_OTopLeft_List.Count; i++)
+                {
+                    int[] position = optPostions_OTopLeft_List[i];
+                    file.WriteLine(String.Format("{0, -40}:{1}, {2}", "Postion " + i.ToString(), position[0], position[1]));
+                }
                 file.WriteLine("\n");
 
                 file.WriteLine(String.Format("{0, -40}", "Event Codes in TDT System:"));
@@ -467,7 +471,7 @@ namespace GonoGoTask_wpfVer
         public async void Present_Start()
         {                 
             float t_Cue, t_Ready, t_noGoShow;
-            int[] pos_Taget_OCenter;
+            int[] pos_Taget_OTopLeft;
             int totalTrialNumPerSess = totalTrialNumPerPosSess * targetPosNum;
 
             // Present Each Trial
@@ -497,7 +501,7 @@ namespace GonoGoTask_wpfVer
                     // Extract trial parameters
                     int[] targetInfo = trialTargetInfo_PerSess_List[sessTriali];
                     currTrialTargetPosInd = targetInfo[0];
-                    pos_Taget_OCenter = optPostions_OCenter_List[currTrialTargetPosInd];
+                    pos_Taget_OTopLeft = optPostions_OTopLeft_List[currTrialTargetPosInd];
                     targetType = (TargetType)targetInfo[1];
                     t_Cue = t_Cue_List[sessTriali];
                     t_Ready = t_Ready_List[sessTriali];
@@ -532,7 +536,7 @@ namespace GonoGoTask_wpfVer
                         }
 
                         // Cue Interface
-                        await Interface_Cue(t_Cue, pos_Taget_OCenter);
+                        await Interface_Cue(t_Cue, pos_Taget_OTopLeft);
 
                         if (PresentTrial == false)
                         {
@@ -543,7 +547,7 @@ namespace GonoGoTask_wpfVer
                         sessTriali++;
                         if (targetType == TargetType.Go)
                         {
-                            await Interface_Go(pos_Taget_OCenter);
+                            await Interface_Go(pos_Taget_OTopLeft);
                             if (PresentTrial == false)
                             {
                                 break;
@@ -551,7 +555,7 @@ namespace GonoGoTask_wpfVer
                         }
                         else
                         {
-                            await Interface_noGo(t_noGoShow, pos_Taget_OCenter);
+                            await Interface_noGo(t_noGoShow, pos_Taget_OTopLeft);
                             if (PresentTrial == false)
                             {
                                 break;
@@ -687,22 +691,22 @@ namespace GonoGoTask_wpfVer
                             file.WriteLine(String.Format("{0, -40}: {1}", "Startpad Left TimePoint", (timePoint_StartpadLeft / ms2sRatio).ToString()));
 
                             //  Target interface:  touched  timepoint and (x, y position) of all touch points
-                            for (int pointi = 0; pointi < touchPoints_PosTime.Count; pointi++)
+                            for (int pointi = 0; pointi < touchPoints_PosTimeDis.Count; pointi++)
                             {
-                                double[] downPoint = touchPoints_PosTime[pointi];
-
+                                double[] downPoint = touchPoints_PosTimeDis[pointi];
+                                
                                 // touched pointi touchpoint
                                 file.WriteLine(String.Format("{0, -40}: {1, -40}", "Touch Point " + pointi.ToString() + " TimePoint", ((decimal)downPoint[1] / ms2sRatio).ToString()));
 
                                 // touched pointi position
-                                file.WriteLine(String.Format("{0, -40}: {1}", "Touch Point " + pointi.ToString() + " XY Position", downPoint[2].ToString() + ", " + downPoint[3].ToString()));
+                                file.WriteLine(String.Format("{0, -40}: {1}", "Touch Point " + pointi.ToString() + " XY Position (Distance)", downPoint[2].ToString() + ", " + downPoint[3].ToString() + "(" + downPoint[7].ToString() + ")"));
 
                             }
 
                             //  Target interface:  left timepoint and (x, y position) of all touch points
-                            for (int pointi = 0; pointi < touchPoints_PosTime.Count; pointi++)
+                            for (int pointi = 0; pointi < touchPoints_PosTimeDis.Count; pointi++)
                             {
-                                double[] downPoint = touchPoints_PosTime[pointi];
+                                double[] downPoint = touchPoints_PosTimeDis[pointi];
 
                                 // left pointi touchpoint
                                 file.WriteLine(String.Format("{0, -40}: {1, -40}", "Left Point " + pointi.ToString() + " TimePoint", ((decimal)downPoint[4] / ms2sRatio).ToString()));
@@ -926,13 +930,23 @@ namespace GonoGoTask_wpfVer
         private void GetSetupParameters()
         {/* get the setup from the parent interface */
 
-            optPostions_OCenter_List = parent.optPostions_OCenter_List;
-            targetPosNum = optPostions_OCenter_List.Count;
+            swf.Screen PrimaryScreen = Utility.TaskPresentTouchScreen();
+            sd.Rectangle Rect_touchScreen = PrimaryScreen.Bounds;
+            int deltax = Rect_touchScreen.Width / 2;
+            int deltay = Rect_touchScreen.Height / 2;
+            optPostions_OTopLeft_List = new List<int[]>();
+            foreach (int[] xyPos in parent.optPostions_OCenter_List)
+            {
+                optPostions_OTopLeft_List.Add(new int[] {xyPos[0] + deltax ,  xyPos[1] + deltay});
+            } 
+
+            targetPosNum = optPostions_OTopLeft_List.Count;
             totalTrialNumPerPosSess = int.Parse(parent.textBox_totalTrialNumPerPosSess.Text);
             nogoTrialNumPerPosSess = int.Parse(parent.textBox_nogoTrialNumPerPosSess.Text);
 
             // object size and distance parameters
             targetDiameterPixal = Utility.Inch2Pixal(parent.targetDiaInch);
+            currCircleGo_Radius_Pixal = targetDiameterPixal / 2;
 
             // interfaces time related parameters
             tRange_ReadyTime = parent.tRange_ReadyTimeS;
@@ -1024,32 +1038,21 @@ namespace GonoGoTask_wpfVer
             myGrid.UpdateLayout();
         }
 
-        private void Show_GoCircle(int[] centerPoint_Pos_OCenter)
+        private void Show_GoCircle(int[] centerPoint_Pos_OTopLeft)
         {/*
             Show the GoCircle into cPoint_Pos_OCenter (Origin in the center of the Screen)
 
             Arg:
-                centerPoint_Pos_OCenter: the x, y Positions of the Circle center in Pixal (Origin in the center of the Screen)
+                centerPoint_Pos_OTopLeft: the x, y Positions of the Circle center in Pixal (Origin at TopLeft)
 
              */
 
-            // Change the cPoint  into Top Left Coordinate System
-            sd.Rectangle Rect_touchScreen = Utility.Detect_PrimaryScreen_Rect();
-            int[] cPoint_Pos_OTopLeft = new int[] { centerPoint_Pos_OCenter[0] + Rect_touchScreen.Width / 2, centerPoint_Pos_OCenter[1] + Rect_touchScreen.Height / 2 };
-
-
-            circleGo = Utility.Move_Circle_OTopLeft(circleGo, cPoint_Pos_OTopLeft);
+            circleGo = Utility.Move_Circle_OTopLeft(circleGo, centerPoint_Pos_OTopLeft);
             circleGo.Fill = brush_goCircleFill;
             circleGo.Stroke = brush_goCircleFill;
             circleGo.Visibility = Visibility.Visible;
             circleGo.IsEnabled = true;
             myGrid.UpdateLayout();
-
-
-            // Extract circleGo_centerPoint_Pixal (Center Point of the Go Circle ) 
-            circleGo_centerPoint_Pixal = new Point(cPoint_Pos_OTopLeft[0], cPoint_Pos_OTopLeft[1]);
-
-            circleGo_Radius_Pixal = ((circleGo.Height + circleGo.Width) / 2) / 2;
         }
        
         private void Remove_GoCircle()
@@ -1088,33 +1091,21 @@ namespace GonoGoTask_wpfVer
             myGrid.UpdateLayout();
         }
 
-        private void Show_noGoRect(int[] centerPoint_Pos_OCenter)
+        private void Show_noGoRect(int[] centerPoint_Pos_OTopLeft)
         {/*
-            Show the nogoRect into centerPoint_Pos_OCenter (Origin in the center of the Screen)
+            Show the nogoRect into centerPoint_Pos_OTopLeft (Origin in the center of the Screen)
 
             Arg:
-                centerPoint_Pos_OCenter: the x, y Positions of the Rectangle center in Pixal (Origin in the center of the Screen)
+                centerPoint_Pos_OTopLeft: the x, y Positions of the Rectangle center in Pixal (Origin in TopLeft)
 
              */
 
-            // Change the cPoint  into Top Left Coordinate System
-            sd.Rectangle Rect_touchScreen = Utility.Detect_PrimaryScreen_Rect();
-            int[] cPoint_Pos_OTopLeft = new int[] { centerPoint_Pos_OCenter[0] + Rect_touchScreen.Width / 2, centerPoint_Pos_OCenter[1] + Rect_touchScreen.Height / 2 };
-
-
-            rectNogo = Utility.Move_Rect_OTopLeft(rectNogo, cPoint_Pos_OTopLeft);
+            rectNogo = Utility.Move_Rect_OTopLeft(rectNogo, centerPoint_Pos_OTopLeft);
             rectNogo.Fill = brush_nogoRectFill;
             rectNogo.Stroke = brush_nogoRectFill;
             rectNogo.Visibility = Visibility.Visible;
             rectNogo.IsEnabled = true;
             myGrid.UpdateLayout();
-
-
-            // Extract circleGo_centerPoint_Pixal (Center Point of the Go Circle ) 
-            circleGo_centerPoint_Pixal = new Point(cPoint_Pos_OTopLeft[0], cPoint_Pos_OTopLeft[1]);
-
-            circleGo_Radius_Pixal = ((circleGo.Height + circleGo.Width) / 2) / 2;
-
         }
 
         private void Remove_NogoRect()
@@ -1235,16 +1226,14 @@ namespace GonoGoTask_wpfVer
             myGrid.UpdateLayout();
         }
 
-        private void Show_OneCrossing(int[] centerPoint_Pos_OCenter)
+        private void Show_OneCrossing(int[] centerPoint_Pos_OTopLeft)
         {/*     Show One Crossing Containing One Horizontal Line and One Vertical Line
-            *   centerPoint_Pos_OCenter: The Center Point X, Y Position of the Two Lines Intersect, Origin at Screen Center
+            *   centerPoint_Pos_OTopLeft: The Center Point X, Y Position of the Two Lines Intersect, Origin at Screen TopLeft
             * 
              */
 
-            // Change the cPoint  into Top Left Coordinate System
-            sd.Rectangle Rect_touchScreen = Utility.Detect_PrimaryScreen_Rect();
-            int centerPoint_X = centerPoint_Pos_OCenter[0] + Rect_touchScreen.Width / 2;
-            int centerPoint_Y = centerPoint_Pos_OCenter[1] + Rect_touchScreen.Height /2;
+            int centerPoint_X = centerPoint_Pos_OTopLeft[0];
+            int centerPoint_Y = centerPoint_Pos_OTopLeft[1];
 
             horiLine.Margin = new Thickness(centerPoint_X - targetDiameterPixal/2, centerPoint_Y, 0, 0);
             vertLine.Margin = new Thickness(centerPoint_X, centerPoint_Y - targetDiameterPixal / 2, 0, 0);
@@ -1480,13 +1469,13 @@ namespace GonoGoTask_wpfVer
         }
 
  
-        public async Task Interface_Cue(float t_Cue, int[] onecrossingPos_OCenter)
+        public async Task Interface_Cue(float t_Cue, int[] onecrossingPos_OTopLeft)
         {/* task for Cue Interface 
             Show the Cue Interface while Listen to the state of the startpad. 
             
             Args:
                 t_Cue: Cue interface showes duration(s)
-                onecrossingPos: the center X, Y position of the one crossing, Origin at Screen Center
+                onecrossingPos_OTopLeft: the center X, Y position of the one crossing, Origin at Top Left
 
             * Output:
             *   startPadHoldstate_Cue = 
@@ -1500,7 +1489,7 @@ namespace GonoGoTask_wpfVer
                 Remove_All();
 
                 // add one crossing on the right middle
-                Show_OneCrossing(onecrossingPos_OCenter);
+                Show_OneCrossing(onecrossingPos_OTopLeft);
 
                 serialPort_IO8.WriteLine(TDTCmd_CueShown);
                 timePoint_Interface_CueOnset = globalWatch.ElapsedMilliseconds;
@@ -1575,7 +1564,7 @@ namespace GonoGoTask_wpfVer
                     }
                 }
                 downPoints_Pos.Clear();
-                touchPoints_PosTime.Clear();
+                touchPoints_PosTimeDis.Clear();
                 waitWatch.Restart();
                 while (waitWatch.ElapsedMilliseconds <= tMax_1Touch) ;
                 waitWatch.Stop();
@@ -1589,46 +1578,37 @@ namespace GonoGoTask_wpfVer
             2. Assign the calculated target touch state to the GoTargetTouchState variable gotargetTouchstate
             */
 
-            double distance; 
+            double distance;
+            int[] currPosTarget_OTopLeft = new int[] { optPostions_OTopLeft_List[currTrialTargetPosInd][0], optPostions_OTopLeft_List[currTrialTargetPosInd][1] };
+
             gotargetTouchstate = GoTargetTouchState.goMissed;
-            while (downPoints_Pos.Count > 0)
+            for(int i = 0; i < touchPoints_PosTimeDis.Count; i++)
             {
-                // always deal with the point at 0
-                Point touchp = new Point(downPoints_Pos[0][0], downPoints_Pos[0][1]);
-
-                // distance between the touchpoint and the center of the circleGo
-                distance = Point.Subtract(circleGo_centerPoint_Pixal, touchp).Length;
-
-
-                if (distance <= circleGo_Radius_Pixal)
+                distance = Math.Sqrt(Math.Pow((touchPoints_PosTimeDis[i][2] - currPosTarget_OTopLeft[0]), 2) + Math.Pow((touchPoints_PosTimeDis[i][3] - currPosTarget_OTopLeft[1]), 2));
+                distance = Math.Round(distance);
+                touchPoints_PosTimeDis[i][7] = distance;
+                if (distance <= currCircleGo_Radius_Pixal)
                 {// Hit 
 
                     serialPort_IO8.WriteLine(TDTCmd_GoTouchedHit);
                     gotargetTouchstate = GoTargetTouchState.goHit;
-                    
-                    downPoints_Pos.Clear();
-                    break;
                 }
-
-                // remove the downPoint at 0
-                downPoints_Pos.RemoveAt(0);
             }
 
             if (gotargetTouchstate == GoTargetTouchState.goMissed)
             {
                 serialPort_IO8.WriteLine(TDTCmd_GoTouchedMiss);
             }
-            downPoints_Pos.Clear();
         }
           
 
-        private async Task Interface_Go(int[] pos_Target)
+        private async Task Interface_Go(int[] pos_Target_OTopLeft)
         {/* task for Go Interface: Show the Go Interface while Listen to the state of the startpad.
             * 1. If Reaction time < Max Reaction Time or Reach Time < Max Reach Time, end up with long reaction or reach time ERROR Interface
             * 2. Within proper reaction time && reach time, detect the touch point and end up with hit, near and miss.
             
             * Args:
-            *    pos_Target: the center position of the Go Target
+            *    pos_Target_OTopLeft: the center position of the Go Target, Origin at TopLeft
 
             * Output:
             *   startPadHoldstate_Cue = 
@@ -1640,7 +1620,7 @@ namespace GonoGoTask_wpfVer
             {
                 // Remove the Crossing and Show the Go Circle
                 Remove_OneCrossing();
-                Show_GoCircle(pos_Target);
+                Show_GoCircle(pos_Target_OTopLeft);
 
                 // Increased Total Go Trial Number of currTrialTargetPosInd
                 TargetExeFeedback_List[currTrialTargetPosInd][0]++;
@@ -1692,13 +1672,13 @@ namespace GonoGoTask_wpfVer
         }
 
 
-        private async Task Interface_noGo(float t_noGoShow, int[] pos_Target)
+        private async Task Interface_noGo(float t_noGoShow, int[] pos_Target_OTopLeft)
         {/* task for noGo Interface: Show the noGo Interface while Listen to the state of the startpad.
             * If StartpadTouched off within t_nogoshow, go to noGo Interface; Otherwise, noGo Correct Interface
             
             * Args:
             *    t_noGoShow: noGo interface shows duration(s)
-            *    pos_Target: the center position of the Go Target
+            *    pos_Target_OTopLeft: the center position of the noGo Target, Origin at TopLeft
 
             * Output:
             *   startPadHoldstate_Cue = 
@@ -1710,7 +1690,7 @@ namespace GonoGoTask_wpfVer
             {
                 // Remove the Crossing and Show the noGo Rect
                 Remove_OneCrossing();
-                Show_noGoRect(pos_Target);
+                Show_noGoRect(pos_Target_OTopLeft);
 
                 // Increased Total noGo Trial Number of currTrialTargetPosInd
                 TargetExeFeedback_List[currTrialTargetPosInd][2]++;
@@ -1864,9 +1844,9 @@ namespace GonoGoTask_wpfVer
                         }
 
                         // store the pos and time of the point with down action, used for file writing
-                        lock (touchPoints_PosTime)
+                        lock (touchPoints_PosTimeDis)
                         {
-                            touchPoints_PosTime.Add(new double[7] { _touchPoint.TouchDevice.Id, timestamp_now, _touchPoint.Position.X, _touchPoint.Position.Y, 0, 0, 0 });
+                            touchPoints_PosTimeDis.Add(new double[8] { _touchPoint.TouchDevice.Id, timestamp_now, _touchPoint.Position.X, _touchPoint.Position.Y, 0, 0, 0, 0});
                         }
                     }
                 }
@@ -1879,15 +1859,15 @@ namespace GonoGoTask_wpfVer
                     }
 
                     // add the left points timepoint, and x,y positions of the current _touchPoint.TouchDevice.Id
-                    lock (touchPoints_PosTime)
+                    lock (touchPoints_PosTimeDis)
                     {
-                        for (int pointi = 0; pointi < touchPoints_PosTime.Count; pointi++)
+                        for (int pointi = 0; pointi < touchPoints_PosTimeDis.Count; pointi++)
                         {
-                            if (touchPoints_PosTime[pointi][0] == _touchPoint.TouchDevice.Id)
+                            if (touchPoints_PosTimeDis[pointi][0] == _touchPoint.TouchDevice.Id)
                             {
-                                touchPoints_PosTime[pointi][4] = timestamp_now;
-                                touchPoints_PosTime[pointi][5] = _touchPoint.Position.X;
-                                touchPoints_PosTime[pointi][6] = _touchPoint.Position.Y;
+                                touchPoints_PosTimeDis[pointi][4] = timestamp_now;
+                                touchPoints_PosTimeDis[pointi][5] = _touchPoint.Position.X;
+                                touchPoints_PosTimeDis[pointi][6] = _touchPoint.Position.Y;
                             }
                         }
                     }
