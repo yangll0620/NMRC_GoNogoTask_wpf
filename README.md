@@ -12,6 +12,8 @@ This is a C# Wpf version of the presentation program in the touch screen of the 
 
 ### Issues:
 1. Stop Bug.
+2. set one touch to 100ms
+3. not record touch points after 100ms
 
 
 ### ToDo List
