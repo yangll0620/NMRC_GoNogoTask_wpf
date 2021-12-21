@@ -185,7 +185,7 @@ namespace GonoGoTask_wpfVer
         // Stop Watch for recording the time interval between the first touchpoint and the last touchpoint within One Touch
         Stopwatch tpoints1TouchWatch;
         // the Max Duration for One Touch (ms)
-        long tMax_1Touch = 40;
+        long tMax_1Touch = 100;
         GoTargetTouchState gotargetTouchstate;
 
 
