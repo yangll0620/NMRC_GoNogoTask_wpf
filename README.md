@@ -9,6 +9,13 @@ This is a C# Wpf version of the presentation program in the touch screen of the 
 		(i.e. if abandon during ready or cue phase, trialnum stays the same)
 
 
+### Improvement
+1. Add leave startpad event code
+COT: close -> leave startpad event code
+GoNogo: Code_noGoLeftEarlyErrorFeedback
+
+2. COT task: no touch to triggle a trial event code
+
 
 ### Issues:
 1. Stop Bug.
