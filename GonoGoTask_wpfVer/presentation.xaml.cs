@@ -233,13 +233,13 @@ namespace GonoGoTask_wpfVer
         static string Code_CueWaitTooShort = "0101";
         static string Code_noGoTargetShown = "0010";
         static string Code_noGoEnoughTCorrectFeedback = "0111";
-        static string Code_noGoLeftEarlyErrorFeedback = "1001";
+        static string Code_LeaveStartpad = "1001";
 
 
-        string TDTCmd_InitState, TDTCmd_TouchTriggerTrial, TDTCmd_ReadyShown, TDTCmd_ReadyWaitTooShort; 
+        string TDTCmd_InitState, TDTCmd_TouchTriggerTrial, TDTCmd_ReadyShown, TDTCmd_ReadyWaitTooShort, TDTCmd_LeaveStartpad; 
         string TDTCmd_GoTargetShown, TDTCmd_GoReactionTooLong, TDTCmd_GoReachTooLong, TDTCmd_GoTouched, TDTCmd_GoTouchedHit, TDTCmd_GoTouchedMiss;
         string TDTCmd_CueShown, TDTCmd_CueWaitTooShort;
-        string TDTCmd_noGoTargetShown, TDTCmd_noGoEnoughTCorrectFeedback, TDTCmd_noGoLeftEarlyErrorFeedback;
+        string TDTCmd_noGoTargetShown, TDTCmd_noGoEnoughTCorrectFeedback;
 
 
         /* startpad parameters */
@@ -345,7 +345,7 @@ namespace GonoGoTask_wpfVer
             TDTCmd_CueWaitTooShort = Convert2_IO8EventCmd_Bit5to8(Code_CueWaitTooShort);
             TDTCmd_noGoTargetShown = Convert2_IO8EventCmd_Bit5to8(Code_noGoTargetShown);
             TDTCmd_noGoEnoughTCorrectFeedback = Convert2_IO8EventCmd_Bit5to8(Code_noGoEnoughTCorrectFeedback);
-            TDTCmd_noGoLeftEarlyErrorFeedback = Convert2_IO8EventCmd_Bit5to8(Code_noGoLeftEarlyErrorFeedback);
+            TDTCmd_LeaveStartpad = Convert2_IO8EventCmd_Bit5to8(Code_LeaveStartpad);
         }
         private void PrepBef_Present()
         {
@@ -396,6 +396,7 @@ namespace GonoGoTask_wpfVer
                 file.WriteLine(String.Format("{0, -40}", "Event Codes in TDT System:"));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_InitState), Code_InitState));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_TouchTriggerTrial), Code_TouchTriggerTrial));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_LeaveStartpad), Code_LeaveStartpad));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_ReadyShown), Code_ReadyShown));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_ReadyWaitTooShort), Code_ReadyWaitTooShort));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_CueShown), Code_CueShown));
@@ -408,13 +409,13 @@ namespace GonoGoTask_wpfVer
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_GoTouchedMiss), Code_GoTouchedMiss));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_noGoTargetShown), Code_noGoTargetShown));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_noGoEnoughTCorrectFeedback), Code_noGoEnoughTCorrectFeedback));
-                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(Code_noGoLeftEarlyErrorFeedback), Code_noGoLeftEarlyErrorFeedback));
                 file.WriteLine("\n");
 
 
                 file.WriteLine(String.Format("{0, -40}", "IO8 Commands:"));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_InitState), TDTCmd_InitState));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_TouchTriggerTrial), TDTCmd_TouchTriggerTrial));
+                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_LeaveStartpad), TDTCmd_LeaveStartpad));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_ReadyShown), TDTCmd_ReadyShown));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_ReadyWaitTooShort), TDTCmd_ReadyWaitTooShort));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_CueShown), TDTCmd_CueShown));
@@ -427,7 +428,6 @@ namespace GonoGoTask_wpfVer
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_GoTouchedMiss), TDTCmd_GoTouchedMiss));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_noGoTargetShown), TDTCmd_noGoTargetShown));
                 file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_noGoEnoughTCorrectFeedback), TDTCmd_noGoEnoughTCorrectFeedback));
-                file.WriteLine(String.Format("{0, -40}:  {1}", nameof(TDTCmd_noGoLeftEarlyErrorFeedback), TDTCmd_noGoLeftEarlyErrorFeedback));
                 file.WriteLine("\n");
             }
         }
@@ -1325,6 +1325,7 @@ namespace GonoGoTask_wpfVer
 
                                 // the time point for leaving startpad
                                 timePoint_StartpadLeft = globalWatch.ElapsedMilliseconds;
+                                serialPort_IO8.WriteLine(TDTCmd_LeaveStartpad);
                                 pressedStartpad = PressedStartpad.No;
                             }
                         }
@@ -1717,7 +1718,6 @@ namespace GonoGoTask_wpfVer
             }
             catch (TaskCanceledException)
             {
-                serialPort_IO8.WriteLine(TDTCmd_noGoLeftEarlyErrorFeedback);
                 Feedback_noGoError();
 
                 trialExeResult = TrialExeResult.nogoMoved;
