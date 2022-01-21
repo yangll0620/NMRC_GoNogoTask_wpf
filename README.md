@@ -11,7 +11,9 @@ This is a C# Wpf version of the presentation program in the touch screen of the 
 
 ### Improvement
 1. Add leave startpad event code
+
 COT: close -> leave startpad event code
+
 GoNogo: Code_noGoLeftEarlyErrorFeedback
 
 2. COT task: no touch to triggle a trial event code
