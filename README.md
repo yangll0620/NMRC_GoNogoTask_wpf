@@ -14,7 +14,7 @@ This is a C# Wpf version of the presentation program in the touch screen of the 
 
 COT: close -> leave startpad event code
 
-GoNogo: Code_noGoLeftEarlyErrorFeedback
+GoNogo: Code_noGoLeftEarlyErrorFeedback (done, waiting to be tested)
 
 2. COT task: no touch to triggle a trial event code
 
