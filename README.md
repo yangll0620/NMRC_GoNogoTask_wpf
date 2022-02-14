@@ -31,6 +31,8 @@ GoNogo: Code_noGoLeftEarlyErrorFeedback (done, waiting to be tested)
 7. Add Block Inf in saved file name
 
 10. Resources debug/release used Problem.
+11. Rerun all missed target
+
 
 
 
