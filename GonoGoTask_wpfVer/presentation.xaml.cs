@@ -149,7 +149,6 @@ namespace GonoGoTask_wpfVer
         string name_point1 = "wpoint1", name_point2 = "wpoint2";
 
 
-        private List<int[]> optPostions_OTopLeft_List;
 
         // Target Information (posIndex, goNogoType) List for Each Trial Per Session
         private List<int[]> trialTargetInfo_PerSess_List;
@@ -170,6 +169,8 @@ namespace GonoGoTask_wpfVer
 
         // time stamp
         long timestamp_0;
+
+        Point circleGo_cPoint_Pixal;
 
 
         // set storing the touch point id (no replicates)
@@ -385,10 +386,10 @@ namespace GonoGoTask_wpfVer
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of Touch Point X Y Position", "Pixal"));
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Touch Point X Y Coordinate System", "(0,0) in Top Left Corner, Right and Down Direction is Positive"));
                 file.WriteLine(String.Format("{0, -40}:  {1}", "Unit of Event TimePoint/Time", "Second"));
-                file.WriteLine(String.Format("{0, -40}:  {1}", "Center Coordinates of Each Target", "((0,0) in Top Left Corner, Right and Down Direction is Positive)"));
-                for (int i = 0; i < optPostions_OTopLeft_List.Count; i++)
+                file.WriteLine(String.Format("{0, -40}:  {1}", "Center Coordinates of Each Target", "((0,0) in Center of the Screen, Right and Down Direction is Positive)"));
+                for (int i = 0; i < parent.optPostions_OCenter_List.Count; i++)
                 {
-                    int[] position = optPostions_OTopLeft_List[i];
+                    int[] position = parent.optPostions_OCenter_List[i];
                     file.WriteLine(String.Format("{0, -40}:{1}, {2}", "Postion " + i.ToString(), position[0], position[1]));
                 }
                 file.WriteLine("\n");
@@ -471,7 +472,7 @@ namespace GonoGoTask_wpfVer
         public async void Present_Start()
         {                 
             float t_Cue, t_Ready, t_noGoShow;
-            int[] pos_Taget_OTopLeft;
+            int[] pos_Taget_OCenter;
             int totalTrialNumPerSess = totalTrialNumPerPosSess * targetPosNum;
 
             // Present Each Trial
@@ -501,7 +502,7 @@ namespace GonoGoTask_wpfVer
                     // Extract trial parameters
                     int[] targetInfo = trialTargetInfo_PerSess_List[sessTriali];
                     currTrialTargetPosInd = targetInfo[0];
-                    pos_Taget_OTopLeft = optPostions_OTopLeft_List[currTrialTargetPosInd];
+                    pos_Taget_OCenter = parent.optPostions_OCenter_List[currTrialTargetPosInd];
                     targetType = (TargetType)targetInfo[1];
                     t_Cue = t_Cue_List[sessTriali];
                     t_Ready = t_Ready_List[sessTriali];
@@ -536,7 +537,7 @@ namespace GonoGoTask_wpfVer
                         }
 
                         // Cue Interface
-                        await Interface_Cue(t_Cue, pos_Taget_OTopLeft);
+                        await Interface_Cue(t_Cue, pos_Taget_OCenter);
 
                         if (PresentTrial == false)
                         {
@@ -547,7 +548,7 @@ namespace GonoGoTask_wpfVer
                         sessTriali++;
                         if (targetType == TargetType.Go)
                         {
-                            await Interface_Go(pos_Taget_OTopLeft);
+                            await Interface_Go(pos_Taget_OCenter);
                             if (PresentTrial == false)
                             {
                                 break;
@@ -555,7 +556,7 @@ namespace GonoGoTask_wpfVer
                         }
                         else
                         {
-                            await Interface_noGo(t_noGoShow, pos_Taget_OTopLeft);
+                            await Interface_noGo(t_noGoShow, pos_Taget_OCenter);
                             if (PresentTrial == false)
                             {
                                 break;
@@ -930,17 +931,7 @@ namespace GonoGoTask_wpfVer
         private void GetSetupParameters()
         {/* get the setup from the parent interface */
 
-            swf.Screen PrimaryScreen = Utility.TaskPresentTouchScreen();
-            sd.Rectangle Rect_touchScreen = PrimaryScreen.Bounds;
-            int deltax = Rect_touchScreen.Width / 2;
-            int deltay = Rect_touchScreen.Height / 2;
-            optPostions_OTopLeft_List = new List<int[]>();
-            foreach (int[] xyPos in parent.optPostions_OCenter_List)
-            {
-                optPostions_OTopLeft_List.Add(new int[] {xyPos[0] + deltax ,  xyPos[1] + deltay});
-            } 
-
-            targetPosNum = optPostions_OTopLeft_List.Count;
+            targetPosNum = parent.optPostions_OCenter_List.Count;
             totalTrialNumPerPosSess = int.Parse(parent.textBox_totalTrialNumPerPosSess.Text);
             nogoTrialNumPerPosSess = int.Parse(parent.textBox_nogoTrialNumPerPosSess.Text);
 
@@ -1038,7 +1029,7 @@ namespace GonoGoTask_wpfVer
             myGrid.UpdateLayout();
         }
 
-        private void Show_GoCircle(int[] centerPoint_Pos_OTopLeft)
+        private void Show_GoCircle(int[] centerPoint_Pos_OCenter)
         {/*
             Show the GoCircle into cPoint_Pos_OCenter (Origin in the center of the Screen)
 
@@ -1047,12 +1038,21 @@ namespace GonoGoTask_wpfVer
 
              */
 
-            circleGo = Utility.Move_Circle_OTopLeft(circleGo, centerPoint_Pos_OTopLeft);
+            // Change the cPoint  into Top Left Coordinate System
+            sd.Rectangle Rect_touchScreen = Utility.Detect_PrimaryScreen_Rect();
+            int[] cPoint_Pos_OTopLeft = new int[] { centerPoint_Pos_OCenter[0] + Rect_touchScreen.Width / 2, centerPoint_Pos_OCenter[1] + Rect_touchScreen.Height / 2 };
+
+            circleGo = Utility.Move_Circle_OTopLeft(circleGo, cPoint_Pos_OTopLeft);
             circleGo.Fill = brush_goCircleFill;
             circleGo.Stroke = brush_goCircleFill;
             circleGo.Visibility = Visibility.Visible;
             circleGo.IsEnabled = true;
             myGrid.UpdateLayout();
+
+
+            // Extract circleGo_cPoint_Pixal 
+            circleGo_cPoint_Pixal = new Point(cPoint_Pos_OTopLeft[0], cPoint_Pos_OTopLeft[1]);
+
         }
        
         private void Remove_GoCircle()
@@ -1091,7 +1091,7 @@ namespace GonoGoTask_wpfVer
             myGrid.UpdateLayout();
         }
 
-        private void Show_noGoRect(int[] centerPoint_Pos_OTopLeft)
+        private void Show_noGoRect(int[] cPoint_Pos_OCenter)
         {/*
             Show the nogoRect into centerPoint_Pos_OTopLeft (Origin in the center of the Screen)
 
@@ -1100,7 +1100,13 @@ namespace GonoGoTask_wpfVer
 
              */
 
-            rectNogo = Utility.Move_Rect_OTopLeft(rectNogo, centerPoint_Pos_OTopLeft);
+
+            // Change the cPoint  into Top Left Coordinate System
+            sd.Rectangle Rect_touchScreen = Utility.Detect_PrimaryScreen_Rect();
+            int[] cPoint_Pos_OTopLeft = new int[] { cPoint_Pos_OCenter[0] + Rect_touchScreen.Width / 2, cPoint_Pos_OCenter[1] + Rect_touchScreen.Height / 2 };
+
+
+            rectNogo = Utility.Move_Rect_OTopLeft(rectNogo, cPoint_Pos_OTopLeft);
             rectNogo.Fill = brush_nogoRectFill;
             rectNogo.Stroke = brush_nogoRectFill;
             rectNogo.Visibility = Visibility.Visible;
@@ -1226,14 +1232,14 @@ namespace GonoGoTask_wpfVer
             myGrid.UpdateLayout();
         }
 
-        private void Show_OneCrossing(int[] centerPoint_Pos_OTopLeft)
+        private void Show_OneCrossing(int[] centerPoint_Pos_OCenter)
         {/*     Show One Crossing Containing One Horizontal Line and One Vertical Line
             *   centerPoint_Pos_OTopLeft: The Center Point X, Y Position of the Two Lines Intersect, Origin at Screen TopLeft
             * 
              */
 
-            int centerPoint_X = centerPoint_Pos_OTopLeft[0];
-            int centerPoint_Y = centerPoint_Pos_OTopLeft[1];
+            int centerPoint_X = centerPoint_Pos_OCenter[0];
+            int centerPoint_Y = centerPoint_Pos_OCenter[1];
 
             horiLine.Margin = new Thickness(centerPoint_X - targetDiameterPixal/2, centerPoint_Y, 0, 0);
             vertLine.Margin = new Thickness(centerPoint_X, centerPoint_Y - targetDiameterPixal / 2, 0, 0);
@@ -1470,13 +1476,13 @@ namespace GonoGoTask_wpfVer
         }
 
  
-        public async Task Interface_Cue(float t_Cue, int[] onecrossingPos_OTopLeft)
+        public async Task Interface_Cue(float t_Cue, int[] onecrossingPos_OCenter)
         {/* task for Cue Interface 
             Show the Cue Interface while Listen to the state of the startpad. 
             
             Args:
                 t_Cue: Cue interface showes duration(s)
-                onecrossingPos_OTopLeft: the center X, Y position of the one crossing, Origin at Top Left
+                onecrossingPos_OCenter: the center X, Y position of the one crossing, Origin at Center
 
             * Output:
             *   startPadHoldstate_Cue = 
@@ -1490,7 +1496,7 @@ namespace GonoGoTask_wpfVer
                 Remove_All();
 
                 // add one crossing on the right middle
-                Show_OneCrossing(onecrossingPos_OTopLeft);
+                Show_OneCrossing(onecrossingPos_OCenter);
 
                 serialPort_IO8.WriteLine(TDTCmd_CueShown);
                 timePoint_Interface_CueOnset = globalWatch.ElapsedMilliseconds;
@@ -1580,26 +1586,38 @@ namespace GonoGoTask_wpfVer
             */
 
             double distance;
-            int[] currPosTarget_OTopLeft = new int[] { optPostions_OTopLeft_List[currTrialTargetPosInd][0], optPostions_OTopLeft_List[currTrialTargetPosInd][1] };
-
+            double circleGo_Radius_Pixal = ((circleGo.Height + circleGo.Width) / 2) / 2;
             gotargetTouchstate = GoTargetTouchState.goMissed;
-            for(int i = 0; i < touchPoints_PosTimeDis.Count; i++)
+            while (PresentTrial && downPoints_Pos.Count > 0)
             {
-                distance = Math.Sqrt(Math.Pow((touchPoints_PosTimeDis[i][2] - currPosTarget_OTopLeft[0]), 2) + Math.Pow((touchPoints_PosTimeDis[i][3] - currPosTarget_OTopLeft[1]), 2));
-                distance = Math.Round(distance);
-                touchPoints_PosTimeDis[i][7] = distance;
-                if (distance <= currCircleGo_Radius_Pixal)
+                // always deal with the point at 0
+                Point touchp = new Point(downPoints_Pos[0][0], downPoints_Pos[0][1]);
+
+                // distance between the touchpoint and the center of the circleGo
+                distance = Point.Subtract(circleGo_cPoint_Pixal, touchp).Length;
+
+
+                if (distance <= circleGo_Radius_Pixal)
                 {// Hit 
 
-                    serialPort_IO8.WriteLine(TDTCmd_GoTouchedHit);
+                    if (serialPort_IO8.IsOpen)
+                        serialPort_IO8.WriteLine(TDTCmd_GoTouchedHit);
                     gotargetTouchstate = GoTargetTouchState.goHit;
+
+                    downPoints_Pos.Clear();
+                    break;
                 }
+
+                // remove the downPoint at 0
+                downPoints_Pos.RemoveAt(0);
             }
 
-            if (gotargetTouchstate == GoTargetTouchState.goMissed)
+            if (PresentTrial && serialPort_IO8.IsOpen && gotargetTouchstate == GoTargetTouchState.goMissed)
             {
                 serialPort_IO8.WriteLine(TDTCmd_GoTouchedMiss);
             }
+            downPoints_Pos.Clear();
+
         }
           
 
