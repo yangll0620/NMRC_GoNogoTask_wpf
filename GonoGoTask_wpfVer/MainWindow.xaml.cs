@@ -80,7 +80,7 @@ namespace GonoGoTask_wpfVer
             // Load Default Config File
             LoadConfigFile("defaultConfig");
 
-            if (textBox_NHPName.Text != "" && serialPortIO8_name != null)
+            if (textBox_NHPName.Text != "" && !String.Equals(serialPortIO8_name, ""))
             {
                 btn_start.IsEnabled = true;
                 btn_stop.IsEnabled = false;
